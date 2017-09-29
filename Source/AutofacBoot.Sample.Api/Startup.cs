@@ -15,9 +15,9 @@ namespace AutofacBoot.Sample.Api
         public Startup(IHostingEnvironment env)
         {
             this.bootstrapper = new AutofacStartup(
-                new AssemblyTaskResolver(typeof(Foo).Assembly));
+                new AssemblyTaskResolver(typeof(ContainerBootstrapTask).Assembly));
 
-            this.Configuration = this.bootstrapper.ConfigureFoo(env);
+            this.Configuration = this.bootstrapper.Configuration(env);
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -35,7 +35,7 @@ namespace AutofacBoot.Sample.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IEnumerable<IBootstrapTask> bootstrapTasks)
+        public void Configure(IApplicationBuilder app, IEnumerable<IApplicationBootstrapTask> bootstrapTasks)
         {
             this.bootstrapper.Configure(app, bootstrapTasks);
         }

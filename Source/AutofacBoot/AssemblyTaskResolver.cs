@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AutofacBoot
 {
-    public class AssemblyTaskResolver : ITaskResolver
+    public class AssemblyTaskResolver : IAutofacBootTaskResolver
     {
         private readonly IEnumerable<Assembly> assemblies;
 
@@ -25,19 +25,29 @@ namespace AutofacBoot
             this.assemblies = assemblies ?? throw new ArgumentNullException(nameof(assemblies));
         }
 
-        public Task<IEnumerable<Type>> GetConfigurationTasks()
+        public Task<IEnumerable<IConfigurationBootstrapTask>> GetConfigurationTasks()
         {
-            return Task.FromResult(this.ScanAssembliesForTypesImplementing<IConfigurationBootstrapTask>());
+            var configurationTaskTypes = this.ScanAssembliesForTypesImplementing<IConfigurationBootstrapTask>();
+            var configurationTasks = configurationTaskTypes
+                .Where(t => typeof(IConfigurationBootstrapTask).IsAssignableFrom(t))
+                .Select(t => (IConfigurationBootstrapTask)Activator.CreateInstance(t));
+
+            return Task.FromResult(configurationTasks);
         }
 
-        public Task<IEnumerable<Type>> GetContainerTasks()
+        public Task<IEnumerable<IContainerBootstrapTask>> GetContainerTasks()
         {
-            return Task.FromResult(this.ScanAssembliesForTypesImplementing<IContainerBootstrapTask>());
+            var containerTaskTypes = this.ScanAssembliesForTypesImplementing<IContainerBootstrapTask>();
+            var containerTasks = containerTaskTypes
+                .Where(t => typeof(IContainerBootstrapTask).IsAssignableFrom(t))
+                .Select(t => (IContainerBootstrapTask)Activator.CreateInstance(t));
+
+            return Task.FromResult(containerTasks);
         }
 
-        public Task<IEnumerable<Type>> GetBootstrapTasks()
+        public Task<IEnumerable<Type>> GetApplicationTaskTypes()
         {
-            return Task.FromResult(this.ScanAssembliesForTypesImplementing<IBootstrapTask>());
+            return Task.FromResult(this.ScanAssembliesForTypesImplementing<IApplicationBootstrapTask>());
         }
 
         private IEnumerable<Type> ScanAssembliesForTypesImplementing<T>()

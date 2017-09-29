@@ -20,6 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AutofacBoot.Sample.Data.InMemory\AutofacBoot.Sample.Data.InMemory.csproj" />
+    <ProjectReference Include="..\AutofacBoot.Sample.Domain\AutofacBoot.Sample.Domain.csproj" />
     <ProjectReference Include="..\AutofacBoot\AutofacBoot.csproj" />
   </ItemGroup>
 

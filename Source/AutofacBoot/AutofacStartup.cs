@@ -12,14 +12,14 @@ namespace AutofacBoot
 {
     public class AutofacStartup
     {
-        private readonly ITaskResolver taskResolver;
+        private readonly IAutofacBootTaskResolver taskResolver;
 
         public AutofacStartup()
         {
             this.taskResolver = new AssemblyTaskResolver(Assembly.GetExecutingAssembly());
         }
 
-        public AutofacStartup(ITaskResolver taskResolver)
+        public AutofacStartup(IAutofacBootTaskResolver taskResolver)
         {
             this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
         }
@@ -33,29 +33,26 @@ namespace AutofacBoot
         {
             builder.RegisterInstance(configuration);
 
-            var containerTaskTypes = await this.taskResolver.GetContainerTasks();
-            var containerTasks = containerTaskTypes
-                .Where(t => typeof(IContainerBootstrapTask).IsAssignableFrom(t))
-                .Select(t => (IContainerBootstrapTask)Activator.CreateInstance(t));
-
+            var containerTasks = await this.taskResolver.GetContainerTasks();
+       
             foreach (var containerTask in containerTasks)
             {
                 await containerTask.Execute(builder);
             }
 
-            var bootstrapTaskTypes = await this.taskResolver.GetBootstrapTasks();
+            var bootstrapTaskTypes = await this.taskResolver.GetApplicationTaskTypes();
             foreach (var bootstrapTaskType in bootstrapTaskTypes)
             {
-                builder.RegisterType(bootstrapTaskType).As<IBootstrapTask>();
+                builder.RegisterType(bootstrapTaskType).As<IApplicationBootstrapTask>();
             }
         }
 
-        public void Configure(IApplicationBuilder app, IEnumerable<IBootstrapTask> bootstrapTasks)
+        public void Configure(IApplicationBuilder app, IEnumerable<IApplicationBootstrapTask> bootstrapTasks)
         {
             this.ConfigureAsync(app, bootstrapTasks).GetAwaiter().GetResult();
         }
 
-        public async Task ConfigureAsync(IApplicationBuilder app, IEnumerable<IBootstrapTask> bootstrapTasks)
+        public async Task ConfigureAsync(IApplicationBuilder app, IEnumerable<IApplicationBootstrapTask> bootstrapTasks)
         {
             foreach (var bootstrapTask in bootstrapTasks)
             {
@@ -63,20 +60,17 @@ namespace AutofacBoot
             }
         }
 
-        public IConfigurationRoot ConfigureFoo(IHostingEnvironment environment)
+        public IConfigurationRoot Configuration(IHostingEnvironment environment)
         {
-            return this.ConfigureFooAsync(environment)
+            return this.ConfigurationAsync(environment)
                 .GetAwaiter()
                 .GetResult();
         }
 
-        public async Task<IConfigurationRoot> ConfigureFooAsync(IHostingEnvironment environment)
+        public async Task<IConfigurationRoot> ConfigurationAsync(IHostingEnvironment environment)
         {
-            var configurationTaskTypes = await this.taskResolver.GetConfigurationTasks();
-            var configurationTasks = configurationTaskTypes
-                .Where(t => typeof(IConfigurationBootstrapTask).IsAssignableFrom(t))
-                .Select(t => (IConfigurationBootstrapTask)Activator.CreateInstance(t));
-
+            var configurationTasks = await this.taskResolver.GetConfigurationTasks();
+            
             var configurationBuilder = new ConfigurationBuilder();
             foreach (var configurationTask in configurationTasks)
             {

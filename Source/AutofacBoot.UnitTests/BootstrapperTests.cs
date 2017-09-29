@@ -5,9 +5,5 @@ namespace AutofacBoot.UnitTests
 {
     public class BootstrapperTests
     {
-        [Theory]
-        public async Task Foo()
-        {
-        }
     }
 }

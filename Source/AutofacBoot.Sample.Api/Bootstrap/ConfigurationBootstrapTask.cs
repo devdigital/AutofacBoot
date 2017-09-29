@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace AutofacBoot.Sample.Api.Bootstrap
 {
-    public class Baz : IConfigurationBootstrapTask
+    public class ConfigurationBootstrapTask : IConfigurationBootstrapTask
     {
         public Task Execute(ConfigurationBuilder configurationBuilder, IHostingEnvironment environment)
         {
