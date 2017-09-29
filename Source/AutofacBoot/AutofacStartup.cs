@@ -5,21 +5,21 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AutofacBoot
 {
-    public class AutofacBoot
+    public class AutofacStartup
     {
         private readonly ITaskResolver taskResolver;
 
-        public AutofacBoot()
+        public AutofacStartup()
         {
             this.taskResolver = new AssemblyTaskResolver(Assembly.GetExecutingAssembly());
         }
 
-        public AutofacBoot(ITaskResolver taskResolver)
+        public AutofacStartup(ITaskResolver taskResolver)
         {
             this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
         }
@@ -61,6 +61,29 @@ namespace AutofacBoot
             {
                 await bootstrapTask.Execute(app);
             }
+        }
+
+        public IConfigurationRoot ConfigureFoo(IHostingEnvironment environment)
+        {
+            return this.ConfigureFooAsync(environment)
+                .GetAwaiter()
+                .GetResult();
+        }
+
+        public async Task<IConfigurationRoot> ConfigureFooAsync(IHostingEnvironment environment)
+        {
+            var configurationTaskTypes = await this.taskResolver.GetConfigurationTasks();
+            var configurationTasks = configurationTaskTypes
+                .Where(t => typeof(IConfigurationBootstrapTask).IsAssignableFrom(t))
+                .Select(t => (IConfigurationBootstrapTask)Activator.CreateInstance(t));
+
+            var configurationBuilder = new ConfigurationBuilder();
+            foreach (var configurationTask in configurationTasks)
+            {
+                await configurationTask.Execute(configurationBuilder, environment);
+            }
+
+            return configurationBuilder.Build();
         }
     }
 }

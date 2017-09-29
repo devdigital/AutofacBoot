@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Autofac;
-using Microsoft.Extensions.Configuration;
 
 namespace AutofacBoot.Sample.Api.Bootstrap
 {

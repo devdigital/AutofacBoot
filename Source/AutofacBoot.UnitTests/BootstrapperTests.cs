@@ -8,7 +8,6 @@ namespace AutofacBoot.UnitTests
         [Theory]
         public async Task Foo()
         {
-            await new AutofacBoot().Run(new Foo());
         }
     }
 }

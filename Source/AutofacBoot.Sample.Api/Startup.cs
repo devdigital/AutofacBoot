@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Autofac;
-using Autofac.Extensions.DependencyInjection;
 using AutofacBoot.Sample.Api.Bootstrap;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -11,20 +10,14 @@ namespace AutofacBoot.Sample.Api
 {
     public class Startup
     {
-        private readonly AutofacBoot bootstrapper;
+        private readonly AutofacStartup bootstrapper;
 
         public Startup(IHostingEnvironment env)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-
-            Configuration = builder.Build();
-
-            this.bootstrapper = new AutofacBoot(
+            this.bootstrapper = new AutofacStartup(
                 new AssemblyTaskResolver(typeof(Foo).Assembly));
+
+            this.Configuration = this.bootstrapper.ConfigureFoo(env);
         }
 
         public IConfigurationRoot Configuration { get; }

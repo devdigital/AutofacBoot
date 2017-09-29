@@ -25,6 +25,11 @@ namespace AutofacBoot
             this.assemblies = assemblies ?? throw new ArgumentNullException(nameof(assemblies));
         }
 
+        public Task<IEnumerable<Type>> GetConfigurationTasks()
+        {
+            return Task.FromResult(this.ScanAssembliesForTypesImplementing<IConfigurationBootstrapTask>());
+        }
+
         public Task<IEnumerable<Type>> GetContainerTasks()
         {
             return Task.FromResult(this.ScanAssembliesForTypesImplementing<IContainerBootstrapTask>());
