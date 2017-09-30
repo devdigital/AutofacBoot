@@ -25,6 +25,9 @@ namespace AutofacBoot
             this.assemblies = assemblies ?? throw new ArgumentNullException(nameof(assemblies));
         }
 
+        public static AssemblyTaskResolver Default => new AssemblyTaskResolver(
+            Assembly.GetExecutingAssembly());    
+
         public Task<IEnumerable<IConfigurationBootstrapTask>> GetConfigurationTasks()
         {
             var configurationTaskTypes = this.ScanAssembliesForTypesImplementing<IConfigurationBootstrapTask>();
@@ -33,6 +36,16 @@ namespace AutofacBoot
                 .Select(t => (IConfigurationBootstrapTask)Activator.CreateInstance(t));
 
             return Task.FromResult(configurationTasks);
+        }
+
+        public Task<IEnumerable<IServiceBootstrapTask>> GetServiceTasks()
+        {
+            var serviceTaskTypes = this.ScanAssembliesForTypesImplementing<IServiceBootstrapTask>();
+            var serviceTasks = serviceTaskTypes
+                .Where(t => typeof(IServiceBootstrapTask).IsAssignableFrom(t))
+                .Select(t => (IServiceBootstrapTask)Activator.CreateInstance(t));
+
+            return Task.FromResult(serviceTasks);
         }
 
         public Task<IEnumerable<IContainerBootstrapTask>> GetContainerTasks()

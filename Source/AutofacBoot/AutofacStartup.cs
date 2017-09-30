@@ -7,6 +7,7 @@ using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace AutofacBoot
 {
@@ -22,6 +23,21 @@ namespace AutofacBoot
         public AutofacStartup(IAutofacBootTaskResolver taskResolver)
         {
             this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
+        }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            this.ConfigureServicesAsync(services).GetAwaiter().GetResult();
+        }
+
+        private async Task ConfigureServicesAsync(IServiceCollection services)
+        {
+            var serviceTasks = await this.taskResolver.GetServiceTasks();
+
+            foreach (var serviceTask in serviceTasks)
+            {
+                await serviceTask.Execute(services);
+            }
         }
 
         public void ConfigureContainer(ContainerBuilder builder, IConfigurationRoot configuration)
@@ -78,6 +94,6 @@ namespace AutofacBoot
             }
 
             return configurationBuilder.Build();
-        }
+        }       
     }
 }

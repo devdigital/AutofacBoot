@@ -1,6 +1,4 @@
-﻿using Autofac.Extensions.DependencyInjection;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using AutofacBoot.Sample.Api.Bootstrap;
 
 namespace AutofacBoot.Sample.Api
 {
@@ -8,12 +6,11 @@ namespace AutofacBoot.Sample.Api
     {
         public static void Main(string[] args)
         {
-            var host = WebHost.CreateDefaultBuilder(args)
-                .ConfigureServices(services => services.AddAutofac())
-                .UseStartup<Startup>()
-                .Build();
-
-            host.Run();
+            new AutofacBoot()
+                .WithArguments(args)
+                .WithTasks(new AssemblyTaskResolver(typeof(ApplicationBootstrapTask).Assembly))
+                .WithContainer(container => { })
+                .Run();
         }
     }
 }

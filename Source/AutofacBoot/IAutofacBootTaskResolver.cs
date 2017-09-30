@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,8 +9,10 @@ namespace AutofacBoot
     {
         Task<IEnumerable<IConfigurationBootstrapTask>> GetConfigurationTasks();
 
+        Task<IEnumerable<IServiceBootstrapTask>> GetServiceTasks();
+
         Task<IEnumerable<IContainerBootstrapTask>> GetContainerTasks();
 
-        Task<IEnumerable<Type>> GetApplicationTaskTypes();
+        Task<IEnumerable<Type>> GetApplicationTaskTypes();        
     }
 }
