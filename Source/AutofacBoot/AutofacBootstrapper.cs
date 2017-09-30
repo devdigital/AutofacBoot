@@ -11,16 +11,16 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AutofacBoot
 {
-    public class AutofacStartup
+    public class AutofacBootstrapper
     {
         private readonly IAutofacBootTaskResolver taskResolver;
 
-        public AutofacStartup()
+        public AutofacBootstrapper()
         {
             this.taskResolver = new AssemblyTaskResolver(Assembly.GetExecutingAssembly());
         }
 
-        public AutofacStartup(IAutofacBootTaskResolver taskResolver)
+        public AutofacBootstrapper(IAutofacBootTaskResolver taskResolver)
         {
             this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
         }

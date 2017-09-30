@@ -9,7 +9,7 @@ namespace AutofacBoot.Sample.Api
             new AutofacBoot()
                 .WithArguments(args)
                 .WithTasks(new AssemblyTaskResolver(typeof(ApplicationBootstrapTask).Assembly))
-                .WithContainer(container => { })
+                //.WithContainer(container => { })
                 .Run();
         }
     }

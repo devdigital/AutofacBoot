@@ -7,7 +7,7 @@ namespace AutofacBoot.Sample.Api.Bootstrap
     {
         public Task Execute(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc().AddControllersAsServices();
             return Task.FromResult(0);
         }
     }

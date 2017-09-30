@@ -4,14 +4,14 @@ namespace AutofacBoot
 {
     public class AutofacBoot
     {
-        public IFoo WithArguments(string[] arguments)
+        public IAutofacBootBuilder WithArguments(string[] arguments)
         {
-            return new Foo(arguments);
+            return new AutofacBootBuilder(arguments);
         }
 
-        public IFoo WithTasks(IAutofacBootTaskResolver taskResolver)
+        public IAutofacBootBuilder WithTasks(IAutofacBootTaskResolver taskResolver)
         {
-            return new Foo(taskResolver);
+            return new AutofacBootBuilder(taskResolver);
         }
 
         public void Run()

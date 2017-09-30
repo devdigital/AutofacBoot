@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace AutofacBoot
 {
-    internal class Foo : IFoo
+    internal class AutofacBootBuilder : IAutofacBootBuilder
     {
         private string[] arguments;
 
@@ -14,29 +14,29 @@ namespace AutofacBoot
 
         private Action<ContainerBuilder> configureContainer;
 
-        public Foo(string[] arguments)
+        public AutofacBootBuilder(string[] arguments)
         {
             this.WithArguments(arguments);
         }
 
-        public Foo(IAutofacBootTaskResolver taskResolver)
+        public AutofacBootBuilder(IAutofacBootTaskResolver taskResolver)
         {
             this.WithTasks(taskResolver);
         }
 
-        public IFoo WithArguments(string[] arguments)
+        public IAutofacBootBuilder WithArguments(string[] arguments)
         {
             this.arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
             return this;
         }
 
-        public IFoo WithTasks(IAutofacBootTaskResolver taskResolver)
+        public IAutofacBootBuilder WithTasks(IAutofacBootTaskResolver taskResolver)
         {
             this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
             return this;
         }
 
-        public IFoo WithContainer(Action<ContainerBuilder> configureContainer)
+        public IAutofacBootBuilder WithContainer(Action<ContainerBuilder> configureContainer)
         {
             this.configureContainer = configureContainer ?? throw new ArgumentNullException(nameof(configureContainer));
             return this;
