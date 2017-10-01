@@ -8,4 +8,8 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="2.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AutofacBoot\AutofacBoot.csproj" />
+  </ItemGroup>
+
 </Project>

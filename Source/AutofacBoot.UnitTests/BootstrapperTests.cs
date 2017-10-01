@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Xunit;
-
-namespace AutofacBoot.UnitTests
+﻿namespace AutofacBoot.UnitTests
 {
     public class BootstrapperTests
     {

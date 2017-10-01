@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore;
@@ -21,19 +20,10 @@ namespace AutofacBoot
 
             return hostBuilder.ConfigureServices(services =>
             {
-                services.AddSingleton<IStartup>(serviceProvider =>
-                {
-                    var hostingEnvironment = serviceProvider
-                        .GetRequiredService<IHostingEnvironment>();
-
-                    return new AutofacBootStartup(
-                        hostingEnvironment,
-                        taskResolver ?? AssemblyTaskResolver.Default);
-                });
-
+                services.AddSingleton(taskResolver ?? AssemblyTaskResolver.Default);
                 services.AddAutofac();
             })
-            .UseSetting(WebHostDefaults.ApplicationKey, typeof(AutofacBootStartup).GetTypeInfo().Assembly.FullName);
+            .UseStartup<AutofacBootStartup>();
         }        
     }
 }

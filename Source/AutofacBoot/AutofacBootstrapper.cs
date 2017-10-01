@@ -1,99 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using Autofac;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Hosting;
 
 namespace AutofacBoot
 {
     public class AutofacBootstrapper
     {
-        private readonly IAutofacBootTaskResolver taskResolver;
-
-        public AutofacBootstrapper()
+        public IAutofacBootBuilder WithArguments(string[] arguments)
         {
-            this.taskResolver = new AssemblyTaskResolver(Assembly.GetExecutingAssembly());
+            return new AutofacBootBuilder(arguments);
         }
 
-        public AutofacBootstrapper(IAutofacBootTaskResolver taskResolver)
+        public IAutofacBootBuilder WithTasks(IAutofacBootTaskResolver taskResolver)
         {
-            this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
+            return new AutofacBootBuilder(taskResolver);
         }
 
-        public void ConfigureServices(IServiceCollection services)
+        public void Run()
         {
-            this.ConfigureServicesAsync(services).GetAwaiter().GetResult();
+            var hostBuilder = new HostBuilderFactory().Create(
+                arguments: null,
+                taskResolver: null,
+                configureContainer: null);
+
+            hostBuilder.Build().Run();
         }
-
-        private async Task ConfigureServicesAsync(IServiceCollection services)
-        {
-            var serviceTasks = await this.taskResolver.GetServiceTasks();
-
-            foreach (var serviceTask in serviceTasks)
-            {
-                await serviceTask.Execute(services);
-            }
-        }
-
-        public void ConfigureContainer(ContainerBuilder builder, IConfigurationRoot configuration)
-        {
-            this.ConfigureContainerAsync(builder, configuration).GetAwaiter().GetResult();
-        }
-
-        public async Task ConfigureContainerAsync(ContainerBuilder builder, IConfigurationRoot configuration)
-        {
-            builder.RegisterInstance(configuration);
-
-            var containerTasks = await this.taskResolver.GetContainerTasks();
-       
-            foreach (var containerTask in containerTasks)
-            {
-                await containerTask.Execute(builder);
-            }
-
-            var bootstrapTaskTypes = await this.taskResolver.GetApplicationTaskTypes();
-            foreach (var bootstrapTaskType in bootstrapTaskTypes)
-            {
-                builder.RegisterType(bootstrapTaskType).As<IApplicationBootstrapTask>();
-            }
-        }
-
-        public void Configure(IApplicationBuilder app, IEnumerable<IApplicationBootstrapTask> bootstrapTasks)
-        {
-            this.ConfigureAsync(app, bootstrapTasks).GetAwaiter().GetResult();
-        }
-
-        public async Task ConfigureAsync(IApplicationBuilder app, IEnumerable<IApplicationBootstrapTask> bootstrapTasks)
-        {
-            foreach (var bootstrapTask in bootstrapTasks)
-            {
-                await bootstrapTask.Execute(app);
-            }
-        }
-
-        public IConfigurationRoot Configuration(IHostingEnvironment environment)
-        {
-            return this.ConfigurationAsync(environment)
-                .GetAwaiter()
-                .GetResult();
-        }
-
-        public async Task<IConfigurationRoot> ConfigurationAsync(IHostingEnvironment environment)
-        {
-            var configurationTasks = await this.taskResolver.GetConfigurationTasks();
-            
-            var configurationBuilder = new ConfigurationBuilder();
-            foreach (var configurationTask in configurationTasks)
-            {
-                await configurationTask.Execute(configurationBuilder, environment);
-            }
-
-            return configurationBuilder.Build();
-        }       
     }
 }
