@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.TestHost;
 
 namespace AutofacBoot.Test
 {
-    public class FooFactory<TServerFactory>
-        where TServerFactory : FooFactory<TServerFactory>
+    public class TestServerFactory<TServerFactory>
+        where TServerFactory : TestServerFactory<TServerFactory>
     {
         private Dictionary<Type, Type> TypeRegistrations { get; }
 
@@ -14,11 +14,11 @@ namespace AutofacBoot.Test
 
         private readonly IAutofacBootTaskResolver taskResolver;
 
-        public FooFactory() : this(AssemblyTaskResolver.Default)
+        public TestServerFactory() : this(AssemblyTaskResolver.Default)
         {        
         }
 
-        public FooFactory(IAutofacBootTaskResolver taskResolver)
+        public TestServerFactory(IAutofacBootTaskResolver taskResolver)
         {
             this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
             this.TypeRegistrations = new Dictionary<Type, Type>();

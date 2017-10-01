@@ -3,7 +3,7 @@ using AutofacBoot.Test;
 
 namespace AutofacBoot.Sample.Api.IntegrationTests
 {
-    public class ServerFactory : TestServerFactory<ServerFactory>
+    public class ServerFactory : FooFactory<ServerFactory>
     {
         public ServerFactory() : base(
             new AssemblyTaskResolver(typeof(ServiceBootstrapTask).Assembly))
