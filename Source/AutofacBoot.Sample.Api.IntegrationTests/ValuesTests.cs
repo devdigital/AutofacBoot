@@ -5,19 +5,20 @@ using System.Threading.Tasks;
 using AutofacBoot.Sample.Domain;
 using AutofacBoot.Test;
 using Moq;
+using Ploeh.AutoFixture.Xunit2;
 using Xunit;
 
 namespace AutofacBoot.Sample.Api.IntegrationTests
 {
     public class ValuesTests
     {
-        [Fact]
-        public async Task ValuesReturnsExpectedValues()
+        [Theory]
+        [AutoData]
+        public async Task ValuesReturnsExpectedValues(
+            ServerFactory serverFactory,
+            Mock<IValuesRepository> valuesRepository,
+            List<int> values)
         {
-            var serverFactory = new ServerFactory();
-            var valuesRepository = new Mock<IValuesRepository>();
-            var values = new List<int> { 1, 2 };
-
             valuesRepository.Setup(r => r.GetValues()).Returns
                 (Task.FromResult(values.AsEnumerable()));
 
