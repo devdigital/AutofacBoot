@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Autofac;
 using Microsoft.AspNetCore.TestHost;
 
 namespace AutofacBoot.Test
@@ -51,18 +50,9 @@ namespace AutofacBoot.Test
         {
             var hostBuilder = new AutofacBootstrapper()
                 .WithTasks(this.taskResolver)
-                .WithContainer(builder =>
-                {
-                    foreach (var typeRegistration in this.TypeRegistrations)
-                    {
-                        builder.RegisterType(typeRegistration.Value).As(typeRegistration.Key);
-                    }
-
-                    foreach (var instanceRegistration in this.InstanceRegistrations)
-                    {
-                        builder.RegisterInstance(instanceRegistration.Value).As(instanceRegistration.Key);
-                    }
-                })
+                .WithContainer(new TestContainerConfiguration(
+                    this.TypeRegistrations,
+                    this.InstanceRegistrations))
                 .Configure();
 
             return new TestServer(hostBuilder);

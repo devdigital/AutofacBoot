@@ -10,7 +10,7 @@ namespace AutofacBoot
 
         IAutofacBootBuilder WithTasks(IAutofacBootTaskResolver taskResolver);
 
-        IAutofacBootBuilder WithContainer(Action<ContainerBuilder> configureContainer);
+        IAutofacBootBuilder WithContainer(IContainerConfiguration containerConfiguration);
 
         IWebHostBuilder Configure();
 

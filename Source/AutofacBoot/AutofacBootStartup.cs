@@ -13,12 +13,26 @@ namespace AutofacBoot
     {
         private readonly AutofacStartupHelper startupHelper;
 
+        private readonly IContainerConfiguration containerConfiguration;
+
         public AutofacBootStartup(
             IHostingEnvironment env, 
-            IAutofacBootTaskResolver taskResolver)
+            IAutofacBootTaskResolver taskResolver,
+            IContainerConfiguration containerConfiguration)
         {
+            if (env == null)
+            {
+                throw new ArgumentNullException(nameof(env));
+            }
+
+            if (taskResolver == null)
+            {
+                throw new ArgumentNullException(nameof(taskResolver));
+            }
+
             this.startupHelper = new AutofacStartupHelper(taskResolver);
             this.Configuration = this.startupHelper.Configuration(env);
+            this.containerConfiguration = containerConfiguration ?? throw new ArgumentNullException(nameof(containerConfiguration));
         }
 
         public IContainer ApplicationContainer { get; private set; }
@@ -33,6 +47,8 @@ namespace AutofacBoot
             builder.Populate(services);
 
             this.startupHelper.ConfigureContainer(builder, this.Configuration);
+
+            containerConfiguration.Configure(builder);
 
             this.ApplicationContainer = builder.Build();
             return new AutofacServiceProvider(this.ApplicationContainer);

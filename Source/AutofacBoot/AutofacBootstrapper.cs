@@ -19,7 +19,7 @@ namespace AutofacBoot
             var hostBuilder = new HostBuilderFactory().Create(
                 arguments: null,
                 taskResolver: null,
-                configureContainer: null);
+                containerConfiguration: null);
 
             hostBuilder.Build().Run();
         }

@@ -12,7 +12,7 @@ namespace AutofacBoot
 
         private IAutofacBootTaskResolver taskResolver;
 
-        private Action<ContainerBuilder> configureContainer;
+        private IContainerConfiguration containerConfiguration;
 
         public AutofacBootBuilder(string[] arguments)
         {
@@ -36,9 +36,9 @@ namespace AutofacBoot
             return this;
         }
 
-        public IAutofacBootBuilder WithContainer(Action<ContainerBuilder> configureContainer)
+        public IAutofacBootBuilder WithContainer(IContainerConfiguration containerConfiguration)
         {
-            this.configureContainer = configureContainer ?? throw new ArgumentNullException(nameof(configureContainer));
+            this.containerConfiguration = containerConfiguration ?? throw new ArgumentNullException(nameof(containerConfiguration));
             return this;
         }
 
@@ -47,7 +47,7 @@ namespace AutofacBoot
             return new HostBuilderFactory().Create(
                 this.arguments,
                 this.taskResolver,
-                this.configureContainer);
+                this.containerConfiguration);
         }
 
         public void Run()

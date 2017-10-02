@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutofacBoot.Sample.Domain;
+using AutofacBoot.Test;
 using Moq;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace AutofacBoot.Sample.Api.IntegrationTests
     public class ValuesTests
     {
         [Fact]
-        public void ValuesReturnsExpectedValues()
+        public async Task ValuesReturnsExpectedValues()
         {
             var serverFactory = new ServerFactory();
             var valuesRepository = new Mock<IValuesRepository>();
@@ -26,8 +27,9 @@ namespace AutofacBoot.Sample.Api.IntegrationTests
             {
                 using (var client = server.CreateClient())
                 {
-                    var response = client.GetAsync("api/values");
-                    Assert.NotNull(response);
+                    var response = await client.GetAsync("api/values");
+                    var responseValues = await response.ToCollection<int>();
+                    Assert.Equal(values, responseValues);
                 }
             }
         } 

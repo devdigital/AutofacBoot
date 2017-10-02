@@ -12,7 +12,7 @@ namespace AutofacBoot
         public IWebHostBuilder Create(
             string[] arguments, 
             IAutofacBootTaskResolver taskResolver, 
-            Action<ContainerBuilder> configureContainer)
+            IContainerConfiguration containerConfiguration)
         {
             var hostBuilder = arguments == null
                 ? WebHost.CreateDefaultBuilder()
@@ -21,6 +21,7 @@ namespace AutofacBoot
             return hostBuilder.ConfigureServices(services =>
             {
                 services.AddSingleton(taskResolver ?? AssemblyTaskResolver.Default);
+                services.AddSingleton(containerConfiguration ?? new NullContainerConfiguration());
                 services.AddAutofac();
             })
             .UseStartup<AutofacBootStartup>();
