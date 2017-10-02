@@ -26,7 +26,7 @@ namespace AutofacBoot
         }
 
         public static AssemblyTaskResolver Default => new AssemblyTaskResolver(
-            Assembly.GetExecutingAssembly());    
+            Assembly.GetEntryAssembly());    
 
         public Task<IEnumerable<IConfigurationBootstrapTask>> GetConfigurationTasks()
         {

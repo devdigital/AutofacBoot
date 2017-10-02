@@ -10,6 +10,7 @@ namespace AutofacBoot.Sample.Api.Bootstrap
         {
             services.AddMvc().AddApplicationPart(
                 typeof(ValuesController).Assembly);
+
             return Task.FromResult(0);
         }
     }
