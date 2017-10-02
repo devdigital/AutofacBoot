@@ -1,0 +1,11 @@
+{
+  "name": "AutofacBoot",
+  "version": "0.1.0",
+  "main": "index.js",
+  "repository": "https://github.com/devdigital/AutofacBoot.git",
+  "author": "devdigital <devdigital.cloud@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "standard-version": "^4.2.0"
+  }
+}

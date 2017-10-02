@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoFixture.AutoMoq" Version="4.0.0-alpha.242" />
+    <PackageReference Include="AutoFixture.Xunit2" Version="4.0.0-alpha.242" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0-preview-20170628-02" />
+    <PackageReference Include="Moq" Version="4.7.127" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutofacBoot.Sample.Api\AutofacBoot.Sample.Api.csproj" />
+    <ProjectReference Include="..\AutofacBoot.Sample.Domain\AutofacBoot.Sample.Domain.csproj" />
+    <ProjectReference Include="..\AutofacBoot.Test\AutofacBoot.Test.csproj" />
+    <ProjectReference Include="..\AutofacBoot\AutofacBoot.csproj" />
+  </ItemGroup>
+
+</Project>
