@@ -29,7 +29,7 @@ namespace AutofacBoot.Sample.Api.IntegrationTests
                 using (var client = server.CreateClient())
                 {
                     var response = await client.GetAsync("api/values");
-                    var responseValues = await response.ToCollection<int>();
+                    var responseValues = await response.To<IEnumerable<int>>();
                     Assert.Equal(values, responseValues);
                 }
             }
