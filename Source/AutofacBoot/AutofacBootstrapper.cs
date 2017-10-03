@@ -14,13 +14,22 @@ namespace AutofacBoot
             return new AutofacBootBuilder(taskResolver);
         }
 
-        public void Run()
+        public IAutofacBootBuilder WithContainer(IContainerConfiguration containerConfiguration)
         {
-            var hostBuilder = new HostBuilderFactory().Create(
+            return new AutofacBootBuilder(containerConfiguration);
+        }
+
+        public IWebHostBuilder Configure()
+        {
+            return new HostBuilderFactory().Create(
                 arguments: null,
                 taskResolver: null,
                 containerConfiguration: null);
+        }
 
+        public void Run()
+        {
+            var hostBuilder = this.Configure();
             hostBuilder.Build().Run();
         }
     }

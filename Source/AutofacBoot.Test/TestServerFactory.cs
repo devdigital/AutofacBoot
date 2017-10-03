@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 
 namespace AutofacBoot.Test
 {
-    public class TestServerFactory<TServerFactory>
+    public abstract class TestServerFactory<TServerFactory>
         where TServerFactory : TestServerFactory<TServerFactory>
     {
         private Dictionary<Type, Type> TypeRegistrations { get; }
 
         private Dictionary<Type, object> InstanceRegistrations { get; }
-
-        private readonly IAutofacBootTaskResolver taskResolver;
-
-        public TestServerFactory() : this(AssemblyTaskResolver.Default)
-        {        
-        }
-
-        public TestServerFactory(IAutofacBootTaskResolver taskResolver)
+        
+        protected TestServerFactory()
         {
-            this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
             this.TypeRegistrations = new Dictionary<Type, Type>();
             this.InstanceRegistrations = new Dictionary<Type, object>();
         }
@@ -49,13 +43,22 @@ namespace AutofacBoot.Test
         public virtual TestServer Create()
         {
             var hostBuilder = new AutofacBootstrapper()
-                .WithTasks(this.taskResolver)
+                .WithTasks(this.GetTaskResolver())
                 .WithContainer(new TestContainerConfiguration(
                     this.TypeRegistrations,
                     this.InstanceRegistrations))
                 .Configure();
 
+            hostBuilder = this.Configure(hostBuilder);
+
             return new TestServer(hostBuilder);
+        }
+
+        protected abstract IAutofacBootTaskResolver GetTaskResolver();
+
+        protected virtual IWebHostBuilder Configure(IWebHostBuilder hostBuilder)
+        {
+            return hostBuilder;
         }
     }
 }
