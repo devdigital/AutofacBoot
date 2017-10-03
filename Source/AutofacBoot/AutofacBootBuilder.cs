@@ -24,6 +24,11 @@ namespace AutofacBoot
             this.WithTasks(taskResolver);
         }
 
+        public AutofacBootBuilder(IContainerConfiguration containerConfiguration)
+        {
+            this.WithContainer(containerConfiguration);
+        }
+
         public IAutofacBootBuilder WithArguments(string[] arguments)
         {
             this.arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
