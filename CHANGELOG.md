@@ -15,9 +15,6 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * adds exception handler ([3886766](https://github.com/devdigital/AutofacBoot/commit/3886766))
-* initial release ([3b9e4ca](https://github.com/devdigital/AutofacBoot/commit/3b9e4ca))
-
-
 
 <a name="0.2.0"></a>
 # 0.2.0 (2017-10-02)
