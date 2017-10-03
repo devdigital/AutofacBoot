@@ -12,7 +12,7 @@ namespace AutofacBoot.Test
     {
         public static async Task<TData> To<TData>(
             this HttpResponseMessage response,
-            TData defaultValue)
+            TData defaultValue = default(TData))
         {
             if (response == null)
             {
