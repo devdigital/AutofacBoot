@@ -1,7 +1,4 @@
 ﻿using System;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
 namespace AutofacBoot
@@ -13,6 +10,8 @@ namespace AutofacBoot
         private IAutofacBootTaskResolver taskResolver;
 
         private IContainerConfiguration containerConfiguration;
+
+        private Action<Exception> exceptionHandler;
 
         public AutofacBootBuilder(string[] arguments)
         {
@@ -27,6 +26,11 @@ namespace AutofacBoot
         public AutofacBootBuilder(IContainerConfiguration containerConfiguration)
         {
             this.WithContainer(containerConfiguration);
+        }
+
+        public AutofacBootBuilder(Action<Exception> exceptionHandler)
+        {
+            this.WithExceptionHandler(exceptionHandler);
         }
 
         public IAutofacBootBuilder WithArguments(string[] arguments)
@@ -47,6 +51,12 @@ namespace AutofacBoot
             return this;
         }
 
+        public IAutofacBootBuilder WithExceptionHandler(Action<Exception> exceptionHandler)
+        {
+            this.exceptionHandler = exceptionHandler ?? throw new ArgumentNullException(nameof(exceptionHandler));
+            return this;
+        }
+
         public IWebHostBuilder Configure()
         {
             return new HostBuilderFactory().Create(
@@ -56,9 +66,21 @@ namespace AutofacBoot
         }
 
         public void Run()
-        {
-            var host = this.Configure().Build();
-            host.Run();
+        {            
+            try
+            {
+                var host = this.Configure().Build();
+                host.Run();
+            }
+            catch (Exception exception)
+            {
+                if (this.exceptionHandler == null)
+                {
+                    throw;
+                }
+
+                this.exceptionHandler(exception);
+            }            
         }
     }
 }

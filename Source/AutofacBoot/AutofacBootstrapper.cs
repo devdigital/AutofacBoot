@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AutofacBoot
 {
@@ -19,6 +20,11 @@ namespace AutofacBoot
             return new AutofacBootBuilder(containerConfiguration);
         }
 
+        public IAutofacBootBuilder WithExceptionHandler(Action<Exception> exceptionHandler)
+        {
+            return new AutofacBootBuilder(exceptionHandler);
+        }
+
         public IWebHostBuilder Configure()
         {
             return new HostBuilderFactory().Create(
@@ -31,6 +37,6 @@ namespace AutofacBoot
         {
             var hostBuilder = this.Configure();
             hostBuilder.Build().Run();
-        }
+        }        
     }
 }
