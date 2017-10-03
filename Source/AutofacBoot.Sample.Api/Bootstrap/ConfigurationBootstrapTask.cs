@@ -9,7 +9,6 @@ namespace AutofacBoot.Sample.Api.Bootstrap
     {
         public Task Execute(ConfigurationBuilder configurationBuilder, IHostingEnvironment environment)
         {
-            throw new NotImplementedException();
             configurationBuilder
                 .SetBasePath(environment.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
