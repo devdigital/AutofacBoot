@@ -8,15 +8,6 @@ namespace AutofacBoot.Sample.Api
         public static void Main(string[] args)
         {
             new AutofacBootstrapper()
-                .Configure()
-                .UseKestrel(options =>
-                {
-                    options.Listen(IPAddress.Any, 443, listenOptions =>
-                    {
-                        listenOptions.UseHttps("server.pfx");
-                    });
-                })
-                .Build()
                 .Run();
         }
     }
