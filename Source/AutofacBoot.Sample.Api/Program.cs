@@ -16,7 +16,6 @@ namespace AutofacBoot.Sample.Api
                         listenOptions.UseHttps("server.pfx");
                     });
                 })
-                .UseUrls("https://*:4430")
                 .Build()
                 .Run();
         }

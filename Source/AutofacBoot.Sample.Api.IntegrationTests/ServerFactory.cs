@@ -21,8 +21,7 @@ namespace AutofacBoot.Sample.Api.IntegrationTests
                 {
                     listenOptions.UseHttps("server.pfx");
                 });
-            })
-            .UseUrls("https://*:4430");
+            });
         }
     }
 }
