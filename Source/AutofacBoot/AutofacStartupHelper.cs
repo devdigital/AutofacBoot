@@ -14,6 +14,8 @@ namespace AutofacBoot
     {
         private readonly IAutofacBootTaskResolver taskResolver;
 
+        private IConfigurationRoot configuration;
+
         public AutofacStartupHelper()
         {
             this.taskResolver = new AssemblyTaskResolver(Assembly.GetExecutingAssembly());
@@ -22,6 +24,27 @@ namespace AutofacBoot
         public AutofacStartupHelper(IAutofacBootTaskResolver taskResolver)
         {
             this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
+        }
+
+        public IConfigurationRoot Configuration(IHostingEnvironment environment)
+        {
+            return this.ConfigurationAsync(environment)
+                .GetAwaiter()
+                .GetResult();
+        }
+
+        public async Task<IConfigurationRoot> ConfigurationAsync(IHostingEnvironment environment)
+        {
+            var configurationTasks = await this.taskResolver.GetConfigurationTasks();
+
+            var configurationBuilder = new ConfigurationBuilder();
+            foreach (var configurationTask in configurationTasks)
+            {
+                await configurationTask.Execute(configurationBuilder, environment);
+            }
+
+            this.configuration = configurationBuilder.Build();
+            return this.configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -35,6 +58,17 @@ namespace AutofacBoot
 
             foreach (var serviceTask in serviceTasks)
             {
+                if (serviceTask is IConditionalExecution conditional)
+                {
+                    var canExecute = await conditional.CanExecute(this.configuration);
+                    if (canExecute)
+                    {
+                        await serviceTask.Execute(services);
+                    }
+
+                    continue;
+                }
+
                 await serviceTask.Execute(services);
             }
         }
@@ -52,6 +86,17 @@ namespace AutofacBoot
        
             foreach (var containerTask in containerTasks)
             {
+                if (containerTask is IConditionalExecution conditional)
+                {
+                    var canExecute = await conditional.CanExecute(this.configuration);
+                    if (canExecute)
+                    {
+                        await containerTask.Execute(builder);
+                    }
+
+                    continue;
+                }
+
                 await containerTask.Execute(builder);
             }
 
@@ -71,28 +116,19 @@ namespace AutofacBoot
         {
             foreach (var bootstrapTask in bootstrapTasks)
             {
+                if (bootstrapTask is IConditionalExecution conditional)
+                {
+                    var canExecute = await conditional.CanExecute(this.configuration);
+                    if (canExecute)
+                    {
+                        await bootstrapTask.Execute(app);
+                    }
+
+                    continue;
+                }
+
                 await bootstrapTask.Execute(app);
             }
-        }
-
-        public IConfigurationRoot Configuration(IHostingEnvironment environment)
-        {
-            return this.ConfigurationAsync(environment)
-                .GetAwaiter()
-                .GetResult();
-        }
-
-        public async Task<IConfigurationRoot> ConfigurationAsync(IHostingEnvironment environment)
-        {
-            var configurationTasks = await this.taskResolver.GetConfigurationTasks();
-            
-            var configurationBuilder = new ConfigurationBuilder();
-            foreach (var configurationTask in configurationTasks)
-            {
-                await configurationTask.Execute(configurationBuilder, environment);
-            }
-
-            return configurationBuilder.Build();
-        }       
+        }      
     }
 }
