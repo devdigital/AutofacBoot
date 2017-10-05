@@ -41,10 +41,6 @@ public class Startup
         services.AddMvc();
     }
 
-    /// <summary>
-    /// Configures the container.
-    /// </summary>
-    /// <param name="builder">The builder.</param>
     public void ConfigureContainer(ContainerBuilder builder)
     {
         // Autofac container registrations...
