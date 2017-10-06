@@ -63,13 +63,13 @@ namespace AutofacBoot
                     var canExecute = await conditional.CanExecute(this.configuration);
                     if (canExecute)
                     {
-                        await serviceTask.Execute(services);
+                        await serviceTask.Execute(this.configuration, services);
                     }
 
                     continue;
                 }
 
-                await serviceTask.Execute(services);
+                await serviceTask.Execute(this.configuration, services);
             }
         }
 
@@ -91,13 +91,13 @@ namespace AutofacBoot
                     var canExecute = await conditional.CanExecute(this.configuration);
                     if (canExecute)
                     {
-                        await containerTask.Execute(builder);
+                        await containerTask.Execute(this.configuration, builder);
                     }
 
                     continue;
                 }
 
-                await containerTask.Execute(builder);
+                await containerTask.Execute(this.configuration, builder);
             }
 
             var bootstrapTaskTypes = await this.taskResolver.GetApplicationTaskTypes();

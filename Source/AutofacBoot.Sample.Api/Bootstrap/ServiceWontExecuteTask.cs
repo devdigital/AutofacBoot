@@ -11,7 +11,7 @@ namespace AutofacBoot.Sample.Api.Bootstrap
             return Task.FromResult(false);
         }
 
-        public Task Execute(IServiceCollection services)
+        public Task Execute(IConfigurationRoot configuration, IServiceCollection services)
         {
             throw new System.NotImplementedException();
         }        
