@@ -11,7 +11,7 @@ namespace AutofacBoot.Sample.Api.Bootstrap
             return Task.FromResult(false);
         }
 
-        public Task Execute(ContainerBuilder builder)
+        public Task Execute(IConfigurationRoot configuration, ContainerBuilder builder)
         {
             throw new System.NotImplementedException();
         }        
