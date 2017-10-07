@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* adds conditional tasks ([8ef8640](https://github.com/devdigital/AutofacBoot/commit/8ef8640))
+* adds configuration to execute
 
 
 
