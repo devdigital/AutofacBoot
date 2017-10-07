@@ -1,4 +1,4 @@
-﻿namespace AutofacBoot.UnitTests
+﻿namespace AutofacBoot.UnitTests.Tests
 {
     public class BootstrapperTests
     {
