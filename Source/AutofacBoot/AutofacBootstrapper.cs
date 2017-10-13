@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace AutofacBoot
 {
@@ -37,6 +39,12 @@ namespace AutofacBoot
         {
             var hostBuilder = this.Configure();
             hostBuilder.Build().Run();
-        }        
+        }
+
+        public async Task RunAsync()
+        {
+            var hostBuilder = this.Configure();
+            await hostBuilder.Build().RunAsync();
+        }
     }
 }
