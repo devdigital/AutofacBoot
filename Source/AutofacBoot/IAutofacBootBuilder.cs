@@ -1,6 +1,7 @@
 ﻿using System;
-using Autofac;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace AutofacBoot
 {
@@ -12,8 +13,12 @@ namespace AutofacBoot
 
         IAutofacBootBuilder WithContainer(IContainerConfiguration containerConfiguration);
 
+        IAutofacBootBuilder WithExceptionHandler(Action<Exception> exceptionHandler);
+
         IWebHostBuilder Configure();
 
-        void Run();        
+        void Run();
+
+        Task RunAsync();
     }
 }
