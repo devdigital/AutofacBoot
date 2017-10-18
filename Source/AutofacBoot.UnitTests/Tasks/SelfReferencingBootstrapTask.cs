@@ -7,7 +7,7 @@ namespace AutofacBoot.UnitTests.Tasks
 {
     public class HighNumberedTask : IConfigurationBootstrapTask, IOrderedTask
     {
-        public Task Execute(ConfigurationBuilder configurationBuilder, IHostingEnvironment environment)
+        public Task Execute(IHostingEnvironment environment, ConfigurationBuilder configurationBuilder)
         {
             throw new NotImplementedException();
         }

@@ -7,7 +7,7 @@ namespace AutofacBoot.Sample.Api.Bootstrap
 {
     public class ConfigurationBootstrapTask : IConfigurationBootstrapTask
     {
-        public Task Execute(ConfigurationBuilder configurationBuilder, IHostingEnvironment environment)
+        public Task Execute(IHostingEnvironment environment, ConfigurationBuilder configurationBuilder)
         {
             configurationBuilder
                 .SetBasePath(environment.ContentRootPath)

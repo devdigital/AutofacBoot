@@ -7,7 +7,7 @@ namespace AutofacBoot
     public interface IConfigurationBootstrapTask
     {
         Task Execute(
-            ConfigurationBuilder configurationBuilder, 
-            IHostingEnvironment environment);
+            IHostingEnvironment environment,
+            ConfigurationBuilder configurationBuilder);
     }
 }

@@ -14,8 +14,10 @@ namespace AutofacBoot
     {
         private readonly IAutofacBootTaskResolver taskResolver;
 
-        private IConfigurationRoot configuration;
+        private IHostingEnvironment hostingEnvironment;
 
+        private IConfigurationRoot configuration;
+        
         public AutofacStartupHelper()
         {
             this.taskResolver = new AssemblyTaskResolver(Assembly.GetExecutingAssembly());
@@ -35,12 +37,15 @@ namespace AutofacBoot
 
         public async Task<IConfigurationRoot> ConfigurationAsync(IHostingEnvironment environment)
         {
+            this.hostingEnvironment = environment;
             var configurationTasks = await this.taskResolver.GetConfigurationTasks();
 
             var configurationBuilder = new ConfigurationBuilder();
             foreach (var configurationTask in configurationTasks)
             {
-                await configurationTask.Execute(configurationBuilder, environment);
+                await configurationTask.Execute(
+                    this.hostingEnvironment, 
+                    configurationBuilder);
             }
 
             this.configuration = configurationBuilder.Build();
@@ -60,16 +65,25 @@ namespace AutofacBoot
             {
                 if (serviceTask is IConditionalExecution conditional)
                 {
-                    var canExecute = await conditional.CanExecute(this.configuration);
+                    var canExecute = await conditional.CanExecute(
+                        this.hostingEnvironment,
+                        this.configuration);
+
                     if (canExecute)
                     {
-                        await serviceTask.Execute(this.configuration, services);
+                        await serviceTask.Execute(
+                            this.hostingEnvironment,
+                            this.configuration, 
+                            services);
                     }
 
                     continue;
                 }
 
-                await serviceTask.Execute(this.configuration, services);
+                await serviceTask.Execute(
+                    this.hostingEnvironment,
+                    this.configuration, 
+                    services);
             }
         }
 
@@ -88,16 +102,25 @@ namespace AutofacBoot
             {
                 if (containerTask is IConditionalExecution conditional)
                 {
-                    var canExecute = await conditional.CanExecute(this.configuration);
+                    var canExecute = await conditional.CanExecute(
+                        this.hostingEnvironment,
+                        this.configuration);
+
                     if (canExecute)
                     {
-                        await containerTask.Execute(this.configuration, builder);
+                        await containerTask.Execute(
+                            this.hostingEnvironment,
+                            this.configuration, 
+                            builder);
                     }
 
                     continue;
                 }
 
-                await containerTask.Execute(this.configuration, builder);
+                await containerTask.Execute(
+                    this.hostingEnvironment,
+                    this.configuration, 
+                    builder);
             }
 
             var bootstrapTaskTypes = await this.taskResolver.GetApplicationTaskTypes();
@@ -118,7 +141,10 @@ namespace AutofacBoot
             {
                 if (bootstrapTask is IConditionalExecution conditional)
                 {
-                    var canExecute = await conditional.CanExecute(this.configuration);
+                    var canExecute = await conditional.CanExecute(
+                        this.hostingEnvironment,
+                        this.configuration);
+
                     if (canExecute)
                     {
                         await bootstrapTask.Execute(app);
