@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.8.0"></a>
+# [0.8.0](https://github.com/devdigital/AutofacBoot/compare/v0.7.1...v0.8.0) (2017-10-18)
+
+
+### Features
+
+* adds hosting environment to tasks ([2d3c01b](https://github.com/devdigital/AutofacBoot/commit/2d3c01b))
+
+
+
 <a name="0.7.1"></a>
 ## [0.7.1](https://github.com/devdigital/AutofacBoot/compare/v0.7.0...v0.7.1) (2017-10-13)
 
