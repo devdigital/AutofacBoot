@@ -6,7 +6,9 @@ namespace AutofacBoot.UnitTests.Tasks
 {
     public class TestConfigurationBootstrapTask : IConfigurationBootstrapTask
     {
-        public Task Execute(ConfigurationBuilder configurationBuilder, IHostingEnvironment environment)
+        public Task Execute(
+            IHostingEnvironment environment, 
+            ConfigurationBuilder configurationBuilder)
         {
             configurationBuilder
                 .SetBasePath(environment.ContentRootPath)

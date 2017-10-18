@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Autofac;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AutofacBoot.Test
 {
@@ -19,7 +20,7 @@ namespace AutofacBoot.Test
             this.instanceRegistrations = instanceRegistrations ?? throw new ArgumentNullException(nameof(instanceRegistrations));
         }
 
-        public Task Configure(ContainerBuilder builder)
+        public Task Configure(IHostingEnvironment environment, ContainerBuilder builder)
         {
             foreach (var typeRegistration in this.typeRegistrations)
             {

@@ -1,16 +1,17 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 
 namespace AutofacBoot.Sample.Api.Bootstrap
 {
     public class ApplicationBootstrapTask : IApplicationBootstrapTask
-    {        
+    {
         private readonly ILoggerFactory loggerFactory;
 
         private readonly IConfigurationRoot configuration;
-
+        
         public ApplicationBootstrapTask(ILoggerFactory loggerFactory, IConfigurationRoot configuration)
         {
             this.loggerFactory = loggerFactory;

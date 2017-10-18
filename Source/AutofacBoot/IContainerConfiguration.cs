@@ -1,10 +1,13 @@
 ﻿using System.Threading.Tasks;
 using Autofac;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AutofacBoot
 {
     public interface IContainerConfiguration
     {
-        Task Configure(ContainerBuilder builder);
+        Task Configure(
+            IHostingEnvironment environment,
+            ContainerBuilder builder);
     }
 }
