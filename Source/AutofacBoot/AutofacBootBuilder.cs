@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -64,31 +63,14 @@ namespace AutofacBoot
             return new HostBuilderFactory().Create(
                 this.arguments,
                 this.taskResolver,
-                this.containerConfiguration);
+                this.containerConfiguration,
+                this.exceptionHandler);
         }
 
-        public void Run()
+        public IWebHostRunner Build()
         {
-            this.RunAsync().GetAwaiter().GetResult();
-        }
-
-        public async Task RunAsync()
-        {
-            try
-            {
-                var host = this.Configure().Build();
-                await host.RunAsync();
-            }
-            catch (AutofacBootException exception)
-            {
-                if (this.exceptionHandler == null)
-                {
-                    throw;
-                }
-
-                this.exceptionHandler(
-                    exception.InnerException, exception.LoggerFactory);
-            }         
+            var host = this.Configure().Build();
+            return host == null ? null : new WebHostRunner(host);
         }
     }
 }

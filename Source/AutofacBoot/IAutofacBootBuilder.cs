@@ -17,8 +17,6 @@ namespace AutofacBoot
 
         IWebHostBuilder Configure();
 
-        void Run();
-
-        Task RunAsync();
+        IWebHostRunner Build();
     }
 }
