@@ -15,7 +15,8 @@ namespace AutofacBoot.UnitTests.Tests
             var bootstrapper = new AutofacBootstrapper()
                 .WithContainer(new ExceptionThrowingContainerConfiguration());
 
-            await Assert.ThrowsAsync<NotImplementedException>(() => bootstrapper.RunAsync());
+            await Assert.ThrowsAsync<AutofacBootException>(
+                () => bootstrapper.RunAsync());
         }
 
         [Theory]
@@ -24,7 +25,18 @@ namespace AutofacBoot.UnitTests.Tests
         {
             var bootstrapper = new AutofacBootstrapper()
                 .WithContainer(new ExceptionThrowingContainerConfiguration())
-                .WithExceptionHandler(Assert.NotNull);
+                .WithExceptionHandler((exception, loggerFactory) => Assert.NotNull(exception));
+
+            await bootstrapper.RunAsync();
+        }
+
+        [Theory]
+        [AutoData]
+        public async Task ExceptionWithHandlerPassesLoggerFactory()
+        {
+            var bootstrapper = new AutofacBootstrapper()
+                .WithContainer(new ExceptionThrowingContainerConfiguration())
+                .WithExceptionHandler((exception, loggerFactory) => Assert.NotNull(loggerFactory));
 
             await bootstrapper.RunAsync();
         }

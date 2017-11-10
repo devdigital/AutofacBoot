@@ -13,7 +13,7 @@ namespace AutofacBoot
 
         private IContainerConfiguration containerConfiguration;
 
-        private Action<Exception> exceptionHandler;
+        private Action<Exception, ILoggerFactory> exceptionHandler;
 
         public AutofacBootBuilder(string[] arguments)
         {
@@ -30,7 +30,7 @@ namespace AutofacBoot
             this.WithContainer(containerConfiguration);
         }
 
-        public AutofacBootBuilder(Action<Exception> exceptionHandler)
+        public AutofacBootBuilder(Action<Exception, ILoggerFactory> exceptionHandler)
         {
             this.WithExceptionHandler(exceptionHandler);
         }
@@ -53,7 +53,7 @@ namespace AutofacBoot
             return this;
         }
 
-        public IAutofacBootBuilder WithExceptionHandler(Action<Exception> exceptionHandler)
+        public IAutofacBootBuilder WithExceptionHandler(Action<Exception, ILoggerFactory> exceptionHandler)
         {
             this.exceptionHandler = exceptionHandler ?? throw new ArgumentNullException(nameof(exceptionHandler));
             return this;
@@ -79,14 +79,15 @@ namespace AutofacBoot
                 var host = this.Configure().Build();
                 await host.RunAsync();
             }
-            catch (Exception exception)
+            catch (AutofacBootException exception)
             {
                 if (this.exceptionHandler == null)
                 {
                     throw;
                 }
 
-                this.exceptionHandler(exception);
+                this.exceptionHandler(
+                    exception.InnerException, exception.LoggerFactory);
             }         
         }
     }
