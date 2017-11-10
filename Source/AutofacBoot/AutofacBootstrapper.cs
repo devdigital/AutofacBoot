@@ -32,13 +32,13 @@ namespace AutofacBoot
             return new HostBuilderFactory().Create(
                 arguments: null,
                 taskResolver: null,
-                containerConfiguration: null);
+                containerConfiguration: null,
+                exceptionHandler: null);
         }
 
         public void Run()
         {
-            var hostBuilder = this.Configure();
-            hostBuilder.Build().Run();
+            this.RunAsync().GetAwaiter().GetResult();
         }
 
         public async Task RunAsync()

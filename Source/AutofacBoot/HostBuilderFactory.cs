@@ -1,9 +1,8 @@
 ﻿using System;
-using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace AutofacBoot
 {
@@ -12,19 +11,22 @@ namespace AutofacBoot
         public IWebHostBuilder Create(
             string[] arguments, 
             IAutofacBootTaskResolver taskResolver, 
-            IContainerConfiguration containerConfiguration)
+            IContainerConfiguration containerConfiguration,
+            Action<Exception, ILoggerFactory> exceptionHandler)
         {
             var hostBuilder = arguments == null
-                ? WebHost.CreateDefaultBuilder()
-                : WebHost.CreateDefaultBuilder(arguments);
+                ? Microsoft.AspNetCore.WebHost.CreateDefaultBuilder()
+                : Microsoft.AspNetCore.WebHost.CreateDefaultBuilder(arguments);
 
-            return hostBuilder.ConfigureServices(services =>
-            {
-                services.AddSingleton(taskResolver ?? AssemblyTaskResolver.Default);
-                services.AddSingleton(containerConfiguration ?? new NullContainerConfiguration());
-                services.AddAutofac();
-            })
-            .UseStartup<AutofacBootStartup>();
+            var webHostBuilder = hostBuilder.ConfigureServices(services =>
+                {
+                    services.AddSingleton(taskResolver ?? AssemblyTaskResolver.Default);
+                    services.AddSingleton(containerConfiguration ?? new NullContainerConfiguration());
+                    services.AddAutofac();
+                })
+                .UseStartup<AutofacBootStartup>();
+
+            return new WebHostBuilder(webHostBuilder, exceptionHandler);
         }        
     }
 }

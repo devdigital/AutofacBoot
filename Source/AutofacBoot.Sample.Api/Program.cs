@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace AutofacBoot.Sample.Api
 {
@@ -8,6 +9,13 @@ namespace AutofacBoot.Sample.Api
         public static void Main(string[] args)
         {
             new AutofacBootstrapper()
+                .WithExceptionHandler((exception, loggerFactory) =>
+                {
+                    var logger = loggerFactory.CreateLogger("Program");
+                    logger.LogError(exception, "There was an error during bootstrapping.");
+                })
+                .Configure()
+                .Build()
                 .Run();
         }
     }
