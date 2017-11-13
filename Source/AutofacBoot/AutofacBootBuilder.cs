@@ -12,7 +12,7 @@ namespace AutofacBoot
 
         private IContainerConfiguration containerConfiguration;
 
-        private Action<Exception, ILoggerFactory> exceptionHandler;
+        private Func<Exception, ILoggerFactory, bool> exceptionHandler;
 
         public AutofacBootBuilder(string[] arguments)
         {
@@ -29,7 +29,7 @@ namespace AutofacBoot
             this.WithContainer(containerConfiguration);
         }
 
-        public AutofacBootBuilder(Action<Exception, ILoggerFactory> exceptionHandler)
+        public AutofacBootBuilder(Func<Exception, ILoggerFactory, bool> exceptionHandler)
         {
             this.WithExceptionHandler(exceptionHandler);
         }
@@ -52,7 +52,7 @@ namespace AutofacBoot
             return this;
         }
 
-        public IAutofacBootBuilder WithExceptionHandler(Action<Exception, ILoggerFactory> exceptionHandler)
+        public IAutofacBootBuilder WithExceptionHandler(Func<Exception, ILoggerFactory, bool> exceptionHandler)
         {
             this.exceptionHandler = exceptionHandler ?? throw new ArgumentNullException(nameof(exceptionHandler));
             return this;

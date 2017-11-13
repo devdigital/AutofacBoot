@@ -12,7 +12,7 @@ namespace AutofacBoot
             string[] arguments, 
             IAutofacBootTaskResolver taskResolver, 
             IContainerConfiguration containerConfiguration,
-            Action<Exception, ILoggerFactory> exceptionHandler)
+            Func<Exception, ILoggerFactory, bool> exceptionHandler)
         {
             var hostBuilder = arguments == null
                 ? Microsoft.AspNetCore.WebHost.CreateDefaultBuilder()

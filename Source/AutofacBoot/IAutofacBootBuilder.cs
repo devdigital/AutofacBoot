@@ -13,7 +13,7 @@ namespace AutofacBoot
 
         IAutofacBootBuilder WithContainer(IContainerConfiguration containerConfiguration);
 
-        IAutofacBootBuilder WithExceptionHandler(Action<Exception, ILoggerFactory> exceptionHandler);
+        IAutofacBootBuilder WithExceptionHandler(Func<Exception, ILoggerFactory, bool> exceptionHandler);
 
         IWebHostBuilder Configure();
 

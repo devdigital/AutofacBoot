@@ -22,7 +22,7 @@ namespace AutofacBoot
             return new AutofacBootBuilder(containerConfiguration);
         }
 
-        public IAutofacBootBuilder WithExceptionHandler(Action<Exception, ILoggerFactory> exceptionHandler)
+        public IAutofacBootBuilder WithExceptionHandler(Func<Exception, ILoggerFactory, bool> exceptionHandler)
         {
             return new AutofacBootBuilder(exceptionHandler);
         }

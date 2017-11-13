@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace AutofacBoot
 {
@@ -10,9 +10,9 @@ namespace AutofacBoot
     {
         private readonly IWebHostBuilder webHostBuilder;
 
-        private readonly Action<Exception, ILoggerFactory> exceptionHandler;
+        private readonly Func<Exception, ILoggerFactory, bool> exceptionHandler;
 
-        public WebHostBuilder(IWebHostBuilder webHostBuilder, Action<Exception, ILoggerFactory> exceptionHandler)
+        public WebHostBuilder(IWebHostBuilder webHostBuilder, Func<Exception, ILoggerFactory, bool> exceptionHandler)
         {
             this.webHostBuilder = webHostBuilder ?? throw new ArgumentNullException(nameof(webHostBuilder));
             this.exceptionHandler = exceptionHandler;
@@ -28,11 +28,16 @@ namespace AutofacBoot
             {
                 if (this.exceptionHandler == null)
                 {
-                    throw;
+                    throw exception.InnerException;
                 }
 
-                this.exceptionHandler(
+                var handled = this.exceptionHandler(
                     exception.InnerException, exception.LoggerFactory);
+
+                if (!handled)
+                {
+                    throw exception.InnerException;
+                }
             }
 
             return null;
