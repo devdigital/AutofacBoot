@@ -11,7 +11,7 @@ namespace AutofacBoot.UnitTests.Tests
     {
         [Theory]
         [AutoData]
-        public async Task ReturnsOrderedTasks(NumberedOrderedTaskResolver taskResolver)
+        public async Task ReturnsOrderedTasks(NumberedTaskOrderer taskOrderer)
         {
             var tasks = new List<IConfigurationBootstrapTask>
             {
@@ -20,8 +20,7 @@ namespace AutofacBoot.UnitTests.Tests
                 new LowNumberedTask()
             };
 
-            var orderedTasks = await
-                taskResolver.GetOrderedConfigurationTasks(tasks);
+            var orderedTasks = await taskOrderer.Order(tasks);
 
             var expectedTasks = new List<IConfigurationBootstrapTask>
             {

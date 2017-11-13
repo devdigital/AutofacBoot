@@ -8,20 +8,27 @@ namespace AutofacBoot
     {
         private string[] arguments;
 
-        private IAutofacBootTaskResolver taskResolver;
+        private ITaskResolver taskResolver;
+
+        private ITaskOrderer taskOrderer;
 
         private IContainerConfiguration containerConfiguration;
 
         private Func<Exception, ILoggerFactory, bool> exceptionHandler;
-
+        
         public AutofacBootBuilder(string[] arguments)
         {
             this.WithArguments(arguments);
         }
 
-        public AutofacBootBuilder(IAutofacBootTaskResolver taskResolver)
+        public AutofacBootBuilder(ITaskResolver taskResolver)
         {
             this.WithTasks(taskResolver);
+        }
+
+        public AutofacBootBuilder(ITaskOrderer taskOrderer)
+        {
+            this.WithOrder(taskOrderer);
         }
 
         public AutofacBootBuilder(IContainerConfiguration containerConfiguration)
@@ -40,9 +47,15 @@ namespace AutofacBoot
             return this;
         }
 
-        public IAutofacBootBuilder WithTasks(IAutofacBootTaskResolver taskResolver)
+        public IAutofacBootBuilder WithTasks(ITaskResolver taskResolver)
         {
             this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
+            return this;
+        }
+
+        public IAutofacBootBuilder WithOrder(ITaskOrderer taskOrderer)
+        {
+            this.taskOrderer = taskOrderer ?? throw new ArgumentNullException(nameof(taskOrderer));
             return this;
         }
 
@@ -63,6 +76,7 @@ namespace AutofacBoot
             return new HostBuilderFactory().Create(
                 this.arguments,
                 this.taskResolver,
+                this.taskOrderer,
                 this.containerConfiguration,
                 this.exceptionHandler);
         }

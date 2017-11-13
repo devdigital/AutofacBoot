@@ -6,85 +6,63 @@ using System.Threading.Tasks;
 
 namespace AutofacBoot
 {
-    public class AssemblyTaskResolver : IAutofacBootTaskResolver
+    public class AssemblyTaskResolver : ITaskResolver
     {
         private readonly IEnumerable<Assembly> assemblies;
-
-        private readonly IOrderedTaskResolver orderedTaskResolver;
-
-        public AssemblyTaskResolver(Assembly assembly) 
-            : this(assembly, new NumberedOrderedTaskResolver())
-        {            
-        }
-
-        public AssemblyTaskResolver(Assembly assembly, IOrderedTaskResolver orderedTaskResolver)
+       
+        public AssemblyTaskResolver(Assembly assembly) : this(new List<Assembly> { assembly })
         {
             if (assembly == null)
             {
                 throw new ArgumentNullException(nameof(assembly));
             }
-
-            this.assemblies = new List<Assembly> { assembly };
-            this.orderedTaskResolver = orderedTaskResolver ?? throw new ArgumentNullException(nameof(orderedTaskResolver));
         }
-
-        public AssemblyTaskResolver(IEnumerable<Assembly> assemblies) 
-            : this(assemblies, new NumberedOrderedTaskResolver())
-        {            
-        }
-
-        public AssemblyTaskResolver(IEnumerable<Assembly> assemblies, IOrderedTaskResolver orderedTaskResolver)
+               
+        public AssemblyTaskResolver(IEnumerable<Assembly> assemblies)
         {
             this.assemblies = assemblies ?? throw new ArgumentNullException(nameof(assemblies));
-            this.orderedTaskResolver = orderedTaskResolver ?? throw new ArgumentNullException(nameof(orderedTaskResolver));
         }
 
         public static AssemblyTaskResolver Default => new AssemblyTaskResolver(
             Assembly.GetEntryAssembly());    
 
-        public async Task<IEnumerable<IConfigurationBootstrapTask>> GetConfigurationTasks()
+        public Task<IEnumerable<IConfigurationBootstrapTask>> GetConfigurationTasks()
         {
             var configurationTaskTypes = this.ScanAssembliesForTypesImplementing<IConfigurationBootstrapTask>();
-            var configurationTasks = configurationTaskTypes
+            var instances = configurationTaskTypes
                 .Where(t => typeof(IConfigurationBootstrapTask).IsAssignableFrom(t))
                 .Select(t => (IConfigurationBootstrapTask) Activator.CreateInstance(t))
                 .ToList();
 
-            return await this.orderedTaskResolver
-                .GetOrderedConfigurationTasks(configurationTasks);
+            return Task.FromResult(instances.AsEnumerable());
         }
 
-        public async Task<IEnumerable<IServiceBootstrapTask>> GetServiceTasks()
+        public Task<IEnumerable<IServiceBootstrapTask>> GetServiceTasks()
         {
             var serviceTaskTypes = this.ScanAssembliesForTypesImplementing<IServiceBootstrapTask>();
-            var serviceTasks = serviceTaskTypes
+            var instances = serviceTaskTypes
                 .Where(t => typeof(IServiceBootstrapTask).IsAssignableFrom(t))
                 .Select(t => (IServiceBootstrapTask) Activator.CreateInstance(t))
                 .ToList();
 
-            return await this.orderedTaskResolver
-                .GetOrderedServiceTasks(serviceTasks);
+            return Task.FromResult(instances.AsEnumerable());
         }
 
-        public async Task<IEnumerable<IContainerBootstrapTask>> GetContainerTasks()
+        public Task<IEnumerable<IContainerBootstrapTask>> GetContainerTasks()
         {
             var containerTaskTypes = this.ScanAssembliesForTypesImplementing<IContainerBootstrapTask>();
-            var containerTasks = containerTaskTypes
+            var instances = containerTaskTypes
                 .Where(t => typeof(IContainerBootstrapTask).IsAssignableFrom(t))
                 .Select(t => (IContainerBootstrapTask) Activator.CreateInstance(t))
                 .ToList();
 
-            return await this.orderedTaskResolver
-                .GetOrderedContainerTasks(containerTasks);            
+            return Task.FromResult(instances.AsEnumerable());
         }
 
-        public async Task<IEnumerable<Type>> GetApplicationTaskTypes()
+        public Task<IEnumerable<Type>> GetApplicationTaskTypes()
         {
-            var applicationTasks = 
-                this.ScanAssembliesForTypesImplementing<IApplicationBootstrapTask>();
-
-            return await this.orderedTaskResolver
-                .GetOrderedApplicationTasks(applicationTasks);            
+            var types = this.ScanAssembliesForTypesImplementing<IApplicationBootstrapTask>();
+            return Task.FromResult(types);
         }
 
         private IEnumerable<Type> ScanAssembliesForTypesImplementing<T>()

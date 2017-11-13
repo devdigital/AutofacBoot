@@ -6,7 +6,7 @@ using AutofacBoot.UnitTests.Tasks;
 
 namespace AutofacBoot.UnitTests.Services
 {
-    public class TestTaskResolver : IAutofacBootTaskResolver
+    public class TestTaskResolver : ITaskResolver
     {
         public Task<IEnumerable<IConfigurationBootstrapTask>> GetConfigurationTasks()
         {

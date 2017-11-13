@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AutofacBoot
 {
-    public interface IAutofacBootTaskResolver
+    public interface ITaskResolver
     {
         Task<IEnumerable<IConfigurationBootstrapTask>> GetConfigurationTasks();
 

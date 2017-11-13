@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using Autofac;
 using Microsoft.AspNetCore.Builder;
@@ -12,20 +11,18 @@ namespace AutofacBoot
 {
     public class AutofacStartupHelper
     {
-        private readonly IAutofacBootTaskResolver taskResolver;
+        private readonly ITaskResolver taskResolver;
+
+        private readonly ITaskOrderer taskOrderer;
 
         private IHostingEnvironment hostingEnvironment;
 
         private IConfigurationRoot configuration;
-        
-        public AutofacStartupHelper()
-        {
-            this.taskResolver = new AssemblyTaskResolver(Assembly.GetExecutingAssembly());
-        }
 
-        public AutofacStartupHelper(IAutofacBootTaskResolver taskResolver)
+        public AutofacStartupHelper(ITaskResolver taskResolver, ITaskOrderer taskOrderer)
         {
-            this.taskResolver = taskResolver ?? throw new ArgumentNullException(nameof(taskResolver));
+            this.taskResolver = new OrderedTaskResolver(taskResolver, taskOrderer);
+            this.taskOrderer = taskOrderer ?? throw new ArgumentNullException(nameof(taskOrderer));
         }
 
         public IConfigurationRoot Configuration(IHostingEnvironment environment)
@@ -135,11 +132,13 @@ namespace AutofacBoot
             this.ConfigureAsync(app, bootstrapTasks).GetAwaiter().GetResult();
         }
 
-        public async Task ConfigureAsync(IApplicationBuilder app, IEnumerable<IApplicationBootstrapTask> bootstrapTasks)
+        public async Task ConfigureAsync(IApplicationBuilder app, IEnumerable<IApplicationBootstrapTask> applicationTasks)
         {
-            foreach (var bootstrapTask in bootstrapTasks)
+            var orderedTasks = await this.taskOrderer.Order(applicationTasks);
+
+            foreach (var applicationTask in orderedTasks)
             {
-                if (bootstrapTask is IConditionalExecution conditional)
+                if (applicationTask is IConditionalExecution conditional)
                 {
                     var canExecute = await conditional.CanExecute(
                         this.hostingEnvironment,
@@ -147,13 +146,13 @@ namespace AutofacBoot
 
                     if (canExecute)
                     {
-                        await bootstrapTask.Execute(app);
+                        await applicationTask.Execute(app);
                     }
 
                     continue;
                 }
 
-                await bootstrapTask.Execute(app);
+                await applicationTask.Execute(app);
             }
         }      
     }

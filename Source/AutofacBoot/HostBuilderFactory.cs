@@ -10,7 +10,8 @@ namespace AutofacBoot
     {        
         public IWebHostBuilder Create(
             string[] arguments, 
-            IAutofacBootTaskResolver taskResolver, 
+            ITaskResolver taskResolver, 
+            ITaskOrderer taskOrderer,
             IContainerConfiguration containerConfiguration,
             Func<Exception, ILoggerFactory, bool> exceptionHandler)
         {
@@ -21,6 +22,7 @@ namespace AutofacBoot
             var webHostBuilder = hostBuilder.ConfigureServices(services =>
                 {
                     services.AddSingleton(taskResolver ?? AssemblyTaskResolver.Default);
+                    services.AddSingleton(taskOrderer ?? new NumberedTaskOrderer());
                     services.AddSingleton(containerConfiguration ?? new NullContainerConfiguration());
                     services.AddAutofac();
                 })

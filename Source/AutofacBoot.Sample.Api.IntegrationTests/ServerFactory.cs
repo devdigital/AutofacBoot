@@ -7,7 +7,7 @@ namespace AutofacBoot.Sample.Api.IntegrationTests
 {
     public class ServerFactory : TestServerFactory<ServerFactory>
     {
-        protected override IAutofacBootTaskResolver GetTaskResolver()
+        protected override ITaskResolver GetTaskResolver()
         {
             return new AssemblyTaskResolver(
                 typeof(ServiceBootstrapTask).Assembly);

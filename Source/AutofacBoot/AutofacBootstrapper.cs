@@ -12,9 +12,14 @@ namespace AutofacBoot
             return new AutofacBootBuilder(arguments);
         }
 
-        public IAutofacBootBuilder WithTasks(IAutofacBootTaskResolver taskResolver)
+        public IAutofacBootBuilder WithTasks(ITaskResolver taskResolver)
         {
             return new AutofacBootBuilder(taskResolver);
+        }
+
+        public IAutofacBootBuilder WithOrder(ITaskOrderer taskOrderer)
+        {
+            return new AutofacBootBuilder(taskOrderer);
         }
 
         public IAutofacBootBuilder WithContainer(IContainerConfiguration containerConfiguration)
@@ -32,6 +37,7 @@ namespace AutofacBoot
             return new HostBuilderFactory().Create(
                 arguments: null,
                 taskResolver: null,
+                taskOrderer: null,
                 containerConfiguration: null,
                 exceptionHandler: null);
         }
