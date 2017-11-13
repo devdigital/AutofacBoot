@@ -13,6 +13,7 @@ namespace AutofacBoot.Sample.Api
                 {
                     var logger = loggerFactory.CreateLogger("Program");
                     logger.LogError(exception, "There was an error during bootstrapping.");
+                    return false;
                 })
                 .Configure()
                 .Build()

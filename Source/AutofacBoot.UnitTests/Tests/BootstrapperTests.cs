@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
 using AutofacBoot.UnitTests.Services;
-using Microsoft.AspNetCore.Hosting;
 using Ploeh.AutoFixture.Xunit2;
 using Xunit;
 
@@ -16,7 +14,7 @@ namespace AutofacBoot.UnitTests.Tests
             var bootstrapper = new AutofacBootstrapper()
                 .WithContainer(new ExceptionThrowingContainerConfiguration());
 
-            Assert.Throws<AutofacBootException>(() => bootstrapper.Build());
+            Assert.Throws<NotImplementedException>(() => bootstrapper.Build());
         }
 
         [Theory]
@@ -25,7 +23,11 @@ namespace AutofacBoot.UnitTests.Tests
         {
             var bootstrapper = new AutofacBootstrapper()
                 .WithContainer(new ExceptionThrowingContainerConfiguration())
-                .WithExceptionHandler((exception, loggerFactory) => Assert.NotNull(exception));
+                .WithExceptionHandler((exception, loggerFactory) =>
+                {
+                    Assert.NotNull(exception);
+                    return true;
+                });
 
             bootstrapper.Build();
         }
@@ -36,7 +38,11 @@ namespace AutofacBoot.UnitTests.Tests
         {
             var bootstrapper = new AutofacBootstrapper()
                 .WithContainer(new ExceptionThrowingContainerConfiguration())
-                .WithExceptionHandler((exception, loggerFactory) => Assert.NotNull(loggerFactory));
+                .WithExceptionHandler((exception, loggerFactory) =>
+                {
+                    Assert.NotNull(loggerFactory);
+                    return true;
+                });
 
             bootstrapper.Build();
         }
@@ -47,7 +53,11 @@ namespace AutofacBoot.UnitTests.Tests
         {
             new AutofacBootstrapper()
                 .WithContainer(new ExceptionThrowingContainerConfiguration())
-                .WithExceptionHandler((exception, loggerFactory) => Assert.NotNull(exception))
+                .WithExceptionHandler((exception, loggerFactory) =>
+                {
+                    Assert.NotNull(exception);
+                    return true;
+                })
                 .Configure()
                 .Build();
         }
@@ -58,9 +68,37 @@ namespace AutofacBoot.UnitTests.Tests
         {
             new AutofacBootstrapper()
                 .WithContainer(new ExceptionThrowingContainerConfiguration())
-                .WithExceptionHandler((exception, loggerFactory) => Assert.NotNull(loggerFactory))
+                .WithExceptionHandler((exception, loggerFactory) =>
+                {
+                    Assert.NotNull(loggerFactory);
+                    return true;
+                })
                 .Configure()
                 .Build();
+        }
+
+        [Theory]
+        [AutoData]
+        public void ExceptionWhenHandledReturnsNullHost()
+        {
+            var host = new AutofacBootstrapper()
+                .WithContainer(new ExceptionThrowingContainerConfiguration())
+                .WithExceptionHandler((exception, loggerFactory) => true)
+                .Configure()
+                .Build();
+
+            Assert.Null(host);
+        }
+
+        [Theory]
+        [AutoData]
+        public void ExceptionWhenNotHandledThrowsException()
+        {
+            Assert.Throws<NotImplementedException>(() => new AutofacBootstrapper()
+                .WithContainer(new ExceptionThrowingContainerConfiguration())
+                .WithExceptionHandler((exception, loggerFactory) => false)
+                .Configure()
+                .Build());
         }
     }
 }

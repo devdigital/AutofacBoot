@@ -11,9 +11,9 @@ namespace AutofacBoot
     {
         private readonly IWebHost build;
 
-        private readonly Action<Exception, ILoggerFactory> exceptionHandler;
+        private readonly Func<Exception, ILoggerFactory, bool> exceptionHandler;
 
-        public WebHost(IWebHost build, Action<Exception, ILoggerFactory> exceptionHandler)
+        public WebHost(IWebHost build, Func<Exception, ILoggerFactory, bool> exceptionHandler)
         {
             this.build = build ?? throw new ArgumentNullException(nameof(build));
             this.exceptionHandler = exceptionHandler;
@@ -39,11 +39,16 @@ namespace AutofacBoot
             {
                 if (this.exceptionHandler == null)
                 {
-                    throw;
+                    throw exception.InnerException;
                 }
 
-                this.exceptionHandler(
+                var handled = this.exceptionHandler(
                     exception.InnerException, exception.LoggerFactory);
+
+                if (!handled)
+                {
+                    throw exception.InnerException;
+                }
             }
 
             return Task.CompletedTask;

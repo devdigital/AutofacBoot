@@ -8,6 +8,11 @@ namespace AutofacBoot
         public AutofacBootException(ILoggerFactory loggerFactory, Exception innerException) : base(
             "There was an error during bootstrapping.", innerException)
         {
+            if (innerException == null)
+            {
+                throw new ArgumentNullException(nameof(innerException));
+            }
+
             this.LoggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
         }
 
