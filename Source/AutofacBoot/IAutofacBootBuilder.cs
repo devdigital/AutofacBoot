@@ -9,7 +9,7 @@ namespace AutofacBoot
     {
         IAutofacBootBuilder WithArguments(string[] arguments);
 
-        IAutofacBootBuilder WithTasks(IAutofacBootTaskResolver taskResolver);
+        IAutofacBootBuilder WithTasks(ITaskResolver taskResolver);
 
         IAutofacBootBuilder WithContainer(IContainerConfiguration containerConfiguration);
 

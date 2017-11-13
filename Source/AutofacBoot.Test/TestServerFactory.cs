@@ -54,7 +54,7 @@ namespace AutofacBoot.Test
             return new TestServer(hostBuilder);
         }
 
-        protected abstract IAutofacBootTaskResolver GetTaskResolver();
+        protected abstract ITaskResolver GetTaskResolver();
 
         protected virtual IWebHostBuilder Configure(IWebHostBuilder hostBuilder)
         {

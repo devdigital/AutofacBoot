@@ -22,7 +22,7 @@ namespace AutofacBoot
         {
             try
             {
-                this.webHostBuilder.Build();
+                return this.webHostBuilder.Build();
             }
             catch (AutofacBootException exception)
             {

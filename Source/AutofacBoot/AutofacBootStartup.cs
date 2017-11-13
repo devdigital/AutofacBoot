@@ -22,8 +22,9 @@ namespace AutofacBoot
 
         public AutofacBootStartup(
             ILoggerFactory loggerFactory,
-            IHostingEnvironment environment, 
-            IAutofacBootTaskResolver taskResolver,
+            IHostingEnvironment environment,            
+            ITaskResolver taskResolver,
+            ITaskOrderer taskOrderer,
             IContainerConfiguration containerConfiguration)
         {
             if (taskResolver == null)
@@ -31,9 +32,14 @@ namespace AutofacBoot
                 throw new ArgumentNullException(nameof(taskResolver));
             }
 
+            if (taskOrderer == null)
+            {
+                throw new ArgumentNullException(nameof(taskOrderer));
+            }
+            
             this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
             this.hostingEnvironment = environment ?? throw new ArgumentNullException(nameof(environment));
-            this.startupHelper = new AutofacStartupHelper(taskResolver);
+            this.startupHelper = new AutofacStartupHelper(taskResolver, taskOrderer);
             this.Configuration = this.startupHelper.Configuration(environment);
             this.containerConfiguration = containerConfiguration ?? throw new ArgumentNullException(nameof(containerConfiguration));
         }
@@ -68,11 +74,11 @@ namespace AutofacBoot
         {
             try
             {
-                var bootstrapTasks = app.ApplicationServices
+                var applicationTasks = app.ApplicationServices
                     .GetServices(typeof(IApplicationBootstrapTask))
                     .Cast<IApplicationBootstrapTask>();
 
-                this.startupHelper.Configure(app, bootstrapTasks);
+                this.startupHelper.Configure(app, applicationTasks);
 
                 var appLifetime = app.ApplicationServices.GetService(typeof(IApplicationLifetime)) as IApplicationLifetime;
                 appLifetime?.ApplicationStopped.Register(() => this.ApplicationContainer.Dispose());
