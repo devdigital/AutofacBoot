@@ -14,6 +14,16 @@ namespace AutofacBoot.Sample.Api.IntegrationTests
     {
         [Theory]
         [AutoData]
+        public async Task AdditionalConfigurationBootstrapTaskIsInvoked(ServerFactory serverFactory)
+        {
+            using (await serverFactory.Create())
+            {                
+                Assert.True(serverFactory.ConfigurationInvoked);
+            }
+        }
+
+        [Theory]
+        [AutoData]
         public async Task ValuesReturnsExpectedValues(
             ServerFactory serverFactory,
             Mock<IValuesRepository> valuesRepository,
@@ -22,7 +32,7 @@ namespace AutofacBoot.Sample.Api.IntegrationTests
             valuesRepository.Setup(r => r.GetValues()).Returns
                 (Task.FromResult(values.AsEnumerable()));
 
-            using (var server = serverFactory
+            using (var server = await serverFactory
                 .With<IValuesRepository>(valuesRepository.Object)
                 .Create())
             {
