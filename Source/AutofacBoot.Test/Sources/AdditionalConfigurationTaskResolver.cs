@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AutofacBoot.Test
+namespace AutofacBoot.Test.Sources
 {
     internal class AdditionalConfigurationTaskResolver : ITaskResolver
     {
