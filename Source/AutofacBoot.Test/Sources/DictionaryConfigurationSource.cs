@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 
-namespace AutofacBoot.Test
+namespace AutofacBoot.Test.Sources
 {
     internal class DictionaryConfigurationSource : IConfigurationSource
     {
