@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 
@@ -40,10 +41,12 @@ namespace AutofacBoot.Test
             return this as TServerFactory;
         }
 
-        public virtual TestServer Create()
+        public virtual async Task<TestServer> Create()
         {
+            var taskResolver = await this.GetAdditionalConfigurationTaskResolver();
+
             var hostBuilder = new AutofacBootstrapper()
-                .WithTasks(this.GetTaskResolver())
+                .WithTasks(taskResolver)
                 .WithContainer(new TestContainerConfiguration(
                     this.TypeRegistrations,
                     this.InstanceRegistrations))
@@ -54,11 +57,23 @@ namespace AutofacBoot.Test
             return new TestServer(hostBuilder);
         }
 
-        protected abstract ITaskResolver GetTaskResolver();
+        protected abstract Task<ITaskResolver> GetTaskResolver();
+
+        protected virtual Task<IDictionary<string, string>> GetConfiguration()
+        {
+            return Task.FromResult<IDictionary<string, string>>(null);
+        }
 
         protected virtual IWebHostBuilder Configure(IWebHostBuilder hostBuilder)
         {
             return hostBuilder;
+        }
+
+        private async Task<ITaskResolver> GetAdditionalConfigurationTaskResolver()
+        {
+            var taskResolver = await this.GetTaskResolver();
+            var configuration = await this.GetConfiguration();
+            return new AdditionalConfigurationTaskResolver(taskResolver, configuration);
         }
     }
 }
