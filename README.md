@@ -1,5 +1,10 @@
 # AutofacBoot
+
 Simple bootstrapping for ASP.NET Core applications running Autofac
+
+```
+install-package AutofacBoot
+```
 
 ## Overview
 
@@ -162,3 +167,23 @@ public class ApplicationBootstrapTask : IApplicationBootstrapTask
 ```
 
 > Note that any `IApplicationBootstrapTask` can have services injected via the constructor that have previously been registered in a service or Autofac container bootstrap task.
+
+## Recipies
+
+### Serilog
+
+You likely want your logging configuration to run early in the bootstrap pipeline, therefore you can use `IOrderedTask` and apply a low value (here, -10):
+
+```csharp
+public class LoggingBootstrapTask : IApplicationBootstrapTask, IOrderedTask
+{
+    public int Order { get; } = -10;
+
+    public Task Execute(IApplicationBuilder app)
+    {
+        Log.Logger = ...
+
+        return Task.CompletedTask;
+    }
+}
+```
