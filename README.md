@@ -168,7 +168,7 @@ public class ApplicationBootstrapTask : IApplicationBootstrapTask
 
 > Note that any `IApplicationBootstrapTask` can have services injected via the constructor that have previously been registered in a service or Autofac container bootstrap task.
 
-## Recipies
+## Recipes
 
 ### Serilog
 
