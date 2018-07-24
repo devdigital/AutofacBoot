@@ -18,7 +18,7 @@ namespace AutofacBoot
         public Task Execute(IHostingEnvironment environment, ConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Add(new DictionaryConfigurationSource(this.configuration));
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutofacBoot.UnitTests.Tasks;
-using Ploeh.AutoFixture.Xunit2;
+using AutoFixture.Xunit2;
 using Xunit;
 
 namespace AutofacBoot.UnitTests.Tests

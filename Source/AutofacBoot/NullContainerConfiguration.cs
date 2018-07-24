@@ -8,7 +8,7 @@ namespace AutofacBoot
     {
         public Task Configure(IHostingEnvironment environment, ContainerBuilder builder)
         {
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

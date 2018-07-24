@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutofacBoot.Test.Sources;
 using Microsoft.AspNetCore.Hosting;
@@ -10,35 +9,22 @@ namespace AutofacBoot.Test
     public abstract class TestServerFactory<TServerFactory>
         where TServerFactory : TestServerFactory<TServerFactory>
     {
-        private Dictionary<Type, Type> TypeRegistrations { get; }
-
-        private Dictionary<Type, object> InstanceRegistrations { get; }
+        private readonly DictionaryContainerConfiguration containerConfiguration;
         
         protected TestServerFactory()
         {
-            this.TypeRegistrations = new Dictionary<Type, Type>();
-            this.InstanceRegistrations = new Dictionary<Type, object>();
+            this.containerConfiguration = new DictionaryContainerConfiguration();
         }
 
         public TServerFactory With<TInterface, TImplementation>()
         {
-            if (this.TypeRegistrations.ContainsKey(typeof(TInterface)))
-            {
-                throw new InvalidOperationException($"The type {typeof(TInterface).Name} has already been registered");
-            }
-
-            this.TypeRegistrations[typeof(TInterface)] = typeof(TImplementation);
+            this.containerConfiguration.With<TInterface, TImplementation>();
             return this as TServerFactory;
         }
 
         public TServerFactory With<TInterface>(object instance)
         {
-            if (this.InstanceRegistrations.ContainsKey(typeof(TInterface)))
-            {
-                throw new InvalidOperationException($"The type {typeof(TInterface).Name} has already been registered");
-            }
-
-            this.InstanceRegistrations[typeof(TInterface)] = instance ?? throw new ArgumentNullException(nameof(instance));
+            this.containerConfiguration.With<TInterface>(instance);
             return this as TServerFactory;
         }
 
@@ -48,9 +34,7 @@ namespace AutofacBoot.Test
 
             var hostBuilder = new AutofacBootstrapper()
                 .WithTasks(taskResolver)
-                .WithContainer(new TestContainerConfiguration(
-                    this.TypeRegistrations,
-                    this.InstanceRegistrations))
+                .WithContainer(this.containerConfiguration)
                 .Configure();
 
             hostBuilder = this.Configure(hostBuilder);

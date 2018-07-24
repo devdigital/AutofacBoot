@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutofacBoot.Sample.Domain;
 using AutofacBoot.Test;
 using Moq;
-using Ploeh.AutoFixture.Xunit2;
+using AutoFixture.Xunit2;
 using Xunit;
 
 namespace AutofacBoot.Sample.Api.IntegrationTests
