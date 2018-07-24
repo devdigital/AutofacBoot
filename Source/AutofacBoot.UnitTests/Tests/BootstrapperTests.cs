@@ -1,14 +1,13 @@
 ﻿using System;
 using AutofacBoot.UnitTests.Services;
-using Ploeh.AutoFixture.Xunit2;
+using AutoFixture.Xunit2;
 using Xunit;
 
 namespace AutofacBoot.UnitTests.Tests
 {
     public class BootstrapperTests
     {
-        [Theory]
-        [AutoData]
+        [Fact]        
         public void ExceptionWithoutHandlerThrowsException()
         {
             var bootstrapper = new AutofacBootstrapper()
@@ -17,8 +16,7 @@ namespace AutofacBoot.UnitTests.Tests
             Assert.Throws<NotImplementedException>(() => bootstrapper.Build());
         }
 
-        [Theory]
-        [AutoData]
+        [Fact]        
         public void ExceptionWithHandlerPassesException()
         {
             var bootstrapper = new AutofacBootstrapper()
@@ -32,8 +30,7 @@ namespace AutofacBoot.UnitTests.Tests
             bootstrapper.Build();
         }
 
-        [Theory]
-        [AutoData]
+        [Fact]
         public void ExceptionWithHandlerPassesLoggerFactory()
         {
             var bootstrapper = new AutofacBootstrapper()
@@ -47,8 +44,7 @@ namespace AutofacBoot.UnitTests.Tests
             bootstrapper.Build();
         }
 
-        [Theory]
-        [AutoData]
+        [Fact]
         public void ExceptionWithHandlerOnWebHostPassesException()
         {
             new AutofacBootstrapper()
@@ -62,8 +58,7 @@ namespace AutofacBoot.UnitTests.Tests
                 .Build();
         }
 
-        [Theory]
-        [AutoData]
+        [Fact]
         public void ExceptionWithHandlerOnWebHostPassesLoggerFactory()
         {
             new AutofacBootstrapper()
@@ -77,8 +72,7 @@ namespace AutofacBoot.UnitTests.Tests
                 .Build();
         }
 
-        [Theory]
-        [AutoData]
+        [Fact]
         public void ExceptionWhenHandledReturnsNullHost()
         {
             var host = new AutofacBootstrapper()
@@ -90,8 +84,7 @@ namespace AutofacBoot.UnitTests.Tests
             Assert.Null(host);
         }
 
-        [Theory]
-        [AutoData]
+        [Fact]
         public void ExceptionWhenNotHandledThrowsException()
         {
             Assert.Throws<NotImplementedException>(() => new AutofacBootstrapper()

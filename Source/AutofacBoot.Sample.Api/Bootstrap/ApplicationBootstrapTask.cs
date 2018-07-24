@@ -25,7 +25,7 @@ namespace AutofacBoot.Sample.Api.Bootstrap
 
             app.UseMvc();
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }
