@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutofacBoot.Test.Sources;
 using Microsoft.AspNetCore.Hosting;
@@ -25,6 +26,42 @@ namespace AutofacBoot.Test
         public TServerFactory With<TInterface>(object instance)
         {
             this.containerConfiguration.With<TInterface>(instance);
+            return this as TServerFactory;
+        }
+
+        /// <summary>
+        /// Adds the configuration.
+        /// </summary>
+        /// <param name="configuration">The configuration.</param>
+        /// <returns>The server factory.</returns>
+        public TServerFactory WithConfiguration(IServerFactoryConfiguration<TServerFactory> configuration)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            configuration.Configure(this as TServerFactory);
+            return this as TServerFactory;
+        }
+
+        /// <summary>
+        /// Adds the configurations.
+        /// </summary>
+        /// <param name="configurations">The configurations.</param>
+        /// <returns>The server factory.</returns>
+        public TServerFactory WithConfigurations(params IServerFactoryConfiguration<TServerFactory>[] configurations)
+        {
+            if (configurations == null)
+            {
+                throw new ArgumentNullException(nameof(configurations));
+            }
+
+            foreach (var configuration in configurations)
+            {
+                this.WithConfiguration(configuration);
+            }
+
             return this as TServerFactory;
         }
 
