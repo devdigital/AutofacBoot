@@ -10,7 +10,7 @@ install-package AutofacBoot
 
 Placing all of your application bootstrapping tasks into a single `Startup` file violates [SRP](https://en.wikipedia.org/wiki/Single_responsibility_principle). AutofacBoot allows you to define each bootstrapping task separately, keeping bootstrapping easier to write and maintain.
 
-In a ASP.NET Core 2.0 application, your `Program.cs` and `Startup.cs` may look like this:
+In an ASP.NET Core 2.0 application, your `Program.cs` and `Startup.cs` may look like this:
 
 ```
 // Program.cs
@@ -18,12 +18,12 @@ public class Program
 {   
     public static void Main(string[] args)
     {
-        var host = WebHost.CreateDefaultBuilder(args)
-            .UseStartup<Startup>()
-            .Build();
-
-        host.Run();
+        CreateWebHostBuilder(args).Build().Run();
     }
+
+    public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        WebHost.CreateDefaultBuilder(args)
+            .UseStartup<Startup>();
 }
 
 public class Startup
@@ -73,11 +73,7 @@ public class Program
 }
 ```
 
-Your bootstrapping configuration then becomes separate tasks:
-
-TODO: table of task types
-
-For example:
+Your bootstrapping configuration then becomes separate tasks, for example:
 
 Configuration:
 
@@ -92,7 +88,7 @@ public class ConfigurationBootstrapTask : IConfigurationBootstrapTask
             .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true)
             .AddEnvironmentVariables();
 
-        return Task.FromResult(0);
+        return Task.CompletedTask;
     }
 }
 ```
@@ -107,12 +103,12 @@ public class ServiceBootstrapTask : IServiceBootstrapTask
         services.AddMvc().AddApplicationPart(
             typeof(MyController).Assembly);
 
-        return Task.FromResult(0);
+        return Task.CompletedTask;
     }
 }
 ```
 
-> Note if you are using the MVC service, you need to specify where your controllers are located by using `AddApplicationPart` and passing it the assembly where your controllers reside.
+> Note if you are using the MVC service, you need to specify where your controllers are located by using `AddApplicationPart` and passing the assembly where your controllers reside.
 
 Autofac container configuration:
 
@@ -122,7 +118,7 @@ public class ContainerBootstrapTask : IContainerBootstrapTask
     public Task Execute(ContainerBuilder builder)
     {
         // access builder.RegisterType etc here...
-        return Task.FromResult(0);
+        return Task.CompletedTask;
     }
 }
 ```
@@ -140,18 +136,8 @@ public class ApplicationBootstrapTask : IApplicationBootstrapTask
         ILoggerFactory loggerFactory,
         IConfigurationRoot configuration)
     {
-        if (loggerFactory == null)
-        {
-            throw new ArgumentNullException(nameof(loggerFactory));
-        }
-
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
-
-        this.loggerFactory = loggerFactory;
-        this.configuration = configuration;
+        this.loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
+        this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     public Task Execute(IApplicationBuilder app)
@@ -161,12 +147,14 @@ public class ApplicationBootstrapTask : IApplicationBootstrapTask
 
         app.UseMvc();
 
-        return Task.FromResult(0);
+        return Task.CompletedTask;
     }
 }
 ```
 
 > Note that any `IApplicationBootstrapTask` can have services injected via the constructor that have previously been registered in a service or Autofac container bootstrap task.
+
+TODO: task type table
 
 ## Recipes
 
