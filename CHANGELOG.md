@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.12.3"></a>
+## [0.12.3](https://github.com/devdigital/AutofacBoot/compare/v0.12.2...v0.12.3) (2018-08-09)
+
+
+### Bug Fixes
+
+* remove null app builder resolver ([986ddd9](https://github.com/devdigital/AutofacBoot/commit/986ddd9))
+
+
+
 <a name="0.12.2"></a>
 ## [0.12.2](https://github.com/devdigital/AutofacBoot/compare/v0.12.1...v0.12.2) (2018-08-09)
 
