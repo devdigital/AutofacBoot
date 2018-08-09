@@ -43,7 +43,7 @@ namespace AutofacBoot
                     services.AddSingleton(taskResolver ?? AssemblyTaskResolver.Default);
                     services.AddSingleton(taskOrderer ?? new NumberedTaskOrderer());
                     services.AddSingleton(containerConfiguration ?? new NullContainerConfiguration());
-                    services.AddSingleton(new DefaultAppBuilderConfigurationResolver(appBuilderConfigurations));
+                    services.AddSingleton<IAppBuilderConfigurationResolver>(new DefaultAppBuilderConfigurationResolver(appBuilderConfigurations));
                     services.AddAutofac();
                 })
                 .UseStartup<AutofacBootStartup>();
