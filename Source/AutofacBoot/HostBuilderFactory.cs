@@ -40,14 +40,10 @@ namespace AutofacBoot
 
             var webHostBuilder = hostBuilder.ConfigureServices(services =>
                 {
-                    var appBuilderConfigurationResolver = appBuilderConfigurations == null
-                        ? (IAppBuilderConfigurationResolver)new NullAppBuilderConfigurationResolver()
-                        : new DefaultAppBuilderConfigurationResolver(appBuilderConfigurations);
-
                     services.AddSingleton(taskResolver ?? AssemblyTaskResolver.Default);
                     services.AddSingleton(taskOrderer ?? new NumberedTaskOrderer());
                     services.AddSingleton(containerConfiguration ?? new NullContainerConfiguration());
-                    services.AddSingleton(appBuilderConfigurationResolver);
+                    services.AddSingleton(new DefaultAppBuilderConfigurationResolver(appBuilderConfigurations));
                     services.AddAutofac();
                 })
                 .UseStartup<AutofacBootStartup>();
