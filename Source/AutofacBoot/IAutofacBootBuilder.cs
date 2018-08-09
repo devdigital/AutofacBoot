@@ -5,6 +5,7 @@
 namespace AutofacBoot
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Logging;
 
@@ -40,6 +41,13 @@ namespace AutofacBoot
         /// <param name="containerConfiguration">The container configuration.</param>
         /// <returns>The builder.</returns>
         IAutofacBootBuilder WithContainer(IContainerConfiguration containerConfiguration);
+
+        /// <summary>
+        /// Adds the application builder configurations.
+        /// </summary>
+        /// <param name="appBuilderConfigurations">The application builder configurations.</param>
+        /// <returns>The builder.</returns>
+        IAutofacBootBuilder WithAppBuilderConfigurations(IDictionary<string, IAppBuilderConfiguration> appBuilderConfigurations);
 
         /// <summary>
         /// Adds the exception handler.

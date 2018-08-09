@@ -75,6 +75,7 @@ namespace AutofacBoot
                 taskResolver: null,
                 taskOrderer: null,
                 containerConfiguration: null,
+                appBuilderConfigurations: null,
                 exceptionHandler: null);
         }
 
