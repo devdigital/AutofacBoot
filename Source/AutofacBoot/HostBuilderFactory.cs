@@ -1,16 +1,32 @@
-﻿using System;
-using Autofac.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿// <copyright file="HostBuilderFactory.cs" company="DevDigital">
+// Copyright (c) DevDigital. All rights reserved.
+// </copyright>
 
 namespace AutofacBoot
 {
+    using System;
+    using Autofac.Extensions.DependencyInjection;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+
+    /// <summary>
+    /// Host builder factory.
+    /// </summary>
     internal class HostBuilderFactory
-    {        
+    {
+        /// <summary>
+        /// Creates the web host builder.
+        /// </summary>
+        /// <param name="arguments">The arguments.</param>
+        /// <param name="taskResolver">The task resolver.</param>
+        /// <param name="taskOrderer">The task orderer.</param>
+        /// <param name="containerConfiguration">The container configuration.</param>
+        /// <param name="exceptionHandler">The exception handler.</param>
+        /// <returns>The web host builder.</returns>
         public IWebHostBuilder Create(
-            string[] arguments, 
-            ITaskResolver taskResolver, 
+            string[] arguments,
+            ITaskResolver taskResolver,
             ITaskOrderer taskOrderer,
             IContainerConfiguration containerConfiguration,
             Func<Exception, ILoggerFactory, bool> exceptionHandler)
@@ -29,6 +45,6 @@ namespace AutofacBoot
                 .UseStartup<AutofacBootStartup>();
 
             return new WebHostBuilder(webHostBuilder, exceptionHandler);
-        }        
+        }
     }
 }

@@ -51,8 +51,26 @@ Task("Build")
         }
     });
 
-Task("Test")
+Task("SetNuSpecVersion")
     .IsDependentOn("Build")
+    .Does(() => 
+    {
+        var nuSpecFiles = new List<string> 
+        {
+            "./Source/AutofacBoot/AutofacBoot.nuspec",
+            "./Source/AutofacBoot.Test/AutofacBoot.Test.nuspec"
+        };
+
+        foreach (var nuSpecFile in nuSpecFiles) 
+        {
+            TransformTextFile(nuSpecFile)
+                .WithToken("version",  buildNumber.ToString())
+                .Save(nuSpecFile);
+        }
+    });
+
+Task("Test")
+    .IsDependentOn("SetNuSpecVersion")
     .Does(() =>
     {
         var projects = GetFiles("./test/**/*Test.csproj");
@@ -63,10 +81,6 @@ Task("Test")
                 project.ToString(),
                 new DotNetCoreTestSettings()
                 {
-                    // Currently not possible? https://github.com/dotnet/cli/issues/3114
-                    // ArgumentCustomization = args => args
-                    //     .Append("-xml")
-                    //     .Append(artifactsDirectory.Path.CombineWithFilePath(project.GetFilenameWithoutExtension()).FullPath + ".xml"),
                     Configuration = configuration,
                     NoBuild = true
                 });
@@ -74,7 +88,7 @@ Task("Test")
     });
 
 Task("Pack")
-    .IsDependentOn("Build")
+    .IsDependentOn("Test")
     .Does(() =>
     {
         var version = buildNumber.ToString();

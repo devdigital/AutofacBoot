@@ -1,8 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// <copyright file="AutofacBootRegistrations.cs" company="DevDigital">
+// Copyright (c) DevDigital. All rights reserved.
+// </copyright>
 
 namespace AutofacBoot
 {
+    using System;
+    using System.Collections.Generic;
+
+    /// <summary>
+    /// AutofacBoot registrations.
+    /// </summary>
     public class AutofacBootRegistrations
     {
         /// <summary>

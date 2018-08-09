@@ -1,13 +1,19 @@
-﻿using System;
-using AutofacBoot.UnitTests.Services;
-using AutoFixture.Xunit2;
-using Xunit;
+﻿// <copyright file="BootstrapperTests.cs" company="DevDigital">
+// Copyright (c) DevDigital. All rights reserved.
+// </copyright>
 
 namespace AutofacBoot.UnitTests.Tests
 {
+    using System;
+    using AutofacBoot.UnitTests.Services;
+    using Xunit;
+
+    #pragma warning disable SA1600
+    #pragma warning disable 1591
+
     public class BootstrapperTests
     {
-        [Fact]        
+        [Fact]
         public void ExceptionWithoutHandlerThrowsException()
         {
             var bootstrapper = new AutofacBootstrapper()
@@ -16,7 +22,7 @@ namespace AutofacBoot.UnitTests.Tests
             Assert.Throws<NotImplementedException>(() => bootstrapper.Build());
         }
 
-        [Fact]        
+        [Fact]
         public void ExceptionWithHandlerPassesException()
         {
             var bootstrapper = new AutofacBootstrapper()

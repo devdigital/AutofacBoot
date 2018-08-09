@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+    <metadata>
+        <id>AutofacBoot</id>
+        <version><%version%></version>
+        <authors>DevDigital</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Simple bootstrapping for ASP.NET Core applications running Autofac.</description>
+        <dependencies>            
+            <dependency id="Autofac" version="4.8.1" />
+            <dependency id="Autofac.Extensions.DependencyInjection" version="4.2.0" />
+            <dependency id="Microsoft.AspNetCore" version="2.1.0" />
+            <dependency id="Microsoft.AspNetCore.Hosting.Abstractions" version="2.1.0" />
+            <dependency id="Microsoft.AspNetCore.Http.Abstractions" version="2.1.0" />
+            <dependency id="Microsoft.Extensions.Configuration" version="2.1.0" />
+            <dependency id="Microsoft.Extensions.Configuration.Abstractions" version="2.1.0" />
+            <dependency id="Microsoft.Extensions.DependencyInjection.Abstractions" version="2.1.0" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\netstandard2.0\AutofacBoot.dll" target="lib\netcoreapp\AutofacBoot.dll" />
+        <file src="bin\Release\netstandard2.0\AutofacBoot.dll" target="lib\netstandard2.0\AutofacBoot.dll" />
+    </files>
+</package>
