@@ -8,6 +8,7 @@
         <description>Simple bootstrapping for ASP.NET Core applications running Autofac.</description>
         <dependencies>            
             <dependency id="Microsoft.AspNetCore.TestHost" version="2.1.0" />
+            <dependency id="AutofacBoot" version="<%version%>" />
         </dependencies>
     </metadata>
     <files>

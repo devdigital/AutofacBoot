@@ -5,6 +5,7 @@
 namespace AutofacBoot
 {
     using System;
+    using System.Collections.Generic;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Logging;
 
@@ -23,6 +24,8 @@ namespace AutofacBoot
         private IContainerConfiguration currentContainerConfiguration;
 
         private Func<Exception, ILoggerFactory, bool> currentExceptionHandler;
+
+        private IDictionary<string, IAppBuilderConfiguration> currentAppBuilderConfigurations;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutofacBootBuilder"/> class.
@@ -98,6 +101,13 @@ namespace AutofacBoot
         }
 
         /// <inheritdoc />
+        public IAutofacBootBuilder WithAppBuilderConfigurations(IDictionary<string, IAppBuilderConfiguration> appBuilderConfigurations)
+        {
+            this.currentAppBuilderConfigurations = appBuilderConfigurations ?? throw new ArgumentNullException(nameof(appBuilderConfigurations));
+            return this;
+        }
+
+        /// <inheritdoc />
         public IAutofacBootBuilder WithExceptionHandler(Func<Exception, ILoggerFactory, bool> exceptionHandler)
         {
             this.currentExceptionHandler = exceptionHandler ?? throw new ArgumentNullException(nameof(exceptionHandler));
@@ -112,6 +122,7 @@ namespace AutofacBoot
                 this.currentTaskResolver,
                 this.currentTaskOrderer,
                 this.currentContainerConfiguration,
+                this.currentAppBuilderConfigurations,
                 this.currentExceptionHandler);
         }
 

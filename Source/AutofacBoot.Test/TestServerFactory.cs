@@ -20,12 +20,15 @@ namespace AutofacBoot.Test
     {
         private readonly DictionaryContainerConfiguration containerConfiguration;
 
+        private readonly IDictionary<string, IAppBuilderConfiguration> appBuilderConfigurations;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TestServerFactory{TServerFactory}"/> class.
         /// </summary>
         protected TestServerFactory()
         {
             this.containerConfiguration = new DictionaryContainerConfiguration();
+            this.appBuilderConfigurations = new Dictionary<string, IAppBuilderConfiguration>();
         }
 
         /// <summary>
@@ -89,6 +92,45 @@ namespace AutofacBoot.Test
         }
 
         /// <summary>
+        /// Adds the application builder configuration.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="appBuilderConfiguration">The application builder configuration.</param>
+        /// <returns>The server factory.</returns>
+        public TServerFactory WithAppBuilderConfiguration(string id, IAppBuilderConfiguration appBuilderConfiguration)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentNullException(nameof(id));
+            }
+
+            if (appBuilderConfiguration == null)
+            {
+                throw new ArgumentNullException(nameof(appBuilderConfiguration));
+            }
+
+            if (this.appBuilderConfigurations.ContainsKey(id))
+            {
+                throw new InvalidOperationException($"Application builder with identifier '{id}' already added.");
+            }
+
+            this.appBuilderConfigurations.Add(id, appBuilderConfiguration);
+            return this as TServerFactory;
+        }
+
+        /// <summary>
+        /// Adds the application builder configuration.
+        /// </summary>
+        /// <typeparam name="TAppBuilderConfiguration">The type of the application builder configuration.</typeparam>
+        /// <param name="appBuilderConfiguration">The application builder configuration.</param>
+        /// <returns>The server factory.</returns>
+        public TServerFactory WithAppBuilderConfiguration<TAppBuilderConfiguration>(TAppBuilderConfiguration appBuilderConfiguration)
+            where TAppBuilderConfiguration : IAppBuilderConfiguration
+        {
+            return this.WithAppBuilderConfiguration(typeof(TAppBuilderConfiguration).FullName, appBuilderConfiguration);
+        }
+
+        /// <summary>
         /// Creates the test server.
         /// </summary>
         /// <returns>The test server.</returns>
@@ -99,6 +141,7 @@ namespace AutofacBoot.Test
             var hostBuilder = new AutofacBootstrapper()
                 .WithTasks(taskResolver)
                 .WithContainer(this.containerConfiguration)
+                .WithAppBuilderConfigurations(this.appBuilderConfigurations)
                 .Configure();
 
             hostBuilder = this.Configure(hostBuilder);
