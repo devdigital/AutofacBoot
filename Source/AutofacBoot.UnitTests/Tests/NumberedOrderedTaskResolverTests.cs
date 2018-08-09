@@ -1,12 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutofacBoot.UnitTests.Tasks;
-using AutoFixture.Xunit2;
-using Xunit;
+﻿// <copyright file="NumberedOrderedTaskResolverTests.cs" company="DevDigital">
+// Copyright (c) DevDigital. All rights reserved.
+// </copyright>
 
 namespace AutofacBoot.UnitTests.Tests
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using AutofacBoot.UnitTests.Tasks;
+    using AutoFixture.Xunit2;
+    using Xunit;
+
+    #pragma warning disable SA1600
+    #pragma warning disable 1591
+
     public class NumberedOrderedTaskResolverTests
     {
         [Theory]
@@ -17,7 +24,7 @@ namespace AutofacBoot.UnitTests.Tests
             {
                 new HighNumberedTask(),
                 new StandardTask(),
-                new LowNumberedTask()
+                new LowNumberedTask(),
             };
 
             var orderedTasks = await taskOrderer.Order(tasks);
@@ -26,7 +33,7 @@ namespace AutofacBoot.UnitTests.Tests
             {
                 new LowNumberedTask(),
                 new StandardTask(),
-                new HighNumberedTask()
+                new HighNumberedTask(),
             };
 
             Assert.Equal(

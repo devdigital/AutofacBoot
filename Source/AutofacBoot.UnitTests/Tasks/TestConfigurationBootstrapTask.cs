@@ -25,7 +25,7 @@ namespace AutofacBoot.UnitTests.Tasks
                 .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

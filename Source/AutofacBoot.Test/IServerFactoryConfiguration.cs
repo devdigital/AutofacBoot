@@ -1,4 +1,8 @@
-﻿namespace AutofacBoot.Test
+﻿// <copyright file="IServerFactoryConfiguration.cs" company="DevDigital">
+// Copyright (c) DevDigital. All rights reserved.
+// </copyright>
+
+namespace AutofacBoot.Test
 {
     /// <summary>
     /// Server factory configuration.

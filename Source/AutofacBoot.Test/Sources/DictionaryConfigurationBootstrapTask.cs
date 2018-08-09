@@ -31,7 +31,7 @@ namespace AutofacBoot.Test.Sources
         public Task Execute(IHostingEnvironment environment, IConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Add(new DictionaryConfigurationSource(this.configuration));
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }
