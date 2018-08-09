@@ -14,7 +14,7 @@ namespace AutofacBoot
     public class NullAppBuilderConfiguration : IAppBuilderConfiguration
     {
         /// <inheritdoc />
-        public Task Configure(IApplicationBuilder builder)
+        public Task Configure(IApplicationBuilder app)
         {
             return Task.CompletedTask;
         }

@@ -15,8 +15,8 @@ namespace AutofacBoot
         /// <summary>
         /// Configures the specified application.
         /// </summary>
-        /// <param name="builder">The builder.</param>
+        /// <param name="app">The application builder.</param>
         /// <returns>The task.</returns>
-        Task Configure(IApplicationBuilder builder);
+        Task Configure(IApplicationBuilder app);
     }
 }
