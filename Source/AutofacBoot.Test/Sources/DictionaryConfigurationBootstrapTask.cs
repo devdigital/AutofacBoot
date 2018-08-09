@@ -15,7 +15,7 @@ namespace AutofacBoot.Test.Sources
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
-        public Task Execute(IHostingEnvironment environment, ConfigurationBuilder configurationBuilder)
+        public Task Execute(IHostingEnvironment environment, IConfigurationBuilder configurationBuilder)
         {
             configurationBuilder.Add(new DictionaryConfigurationSource(this.configuration));
             return Task.FromResult(0);

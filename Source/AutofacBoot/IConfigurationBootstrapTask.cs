@@ -8,6 +8,6 @@ namespace AutofacBoot
     {
         Task Execute(
             IHostingEnvironment environment,
-            ConfigurationBuilder configurationBuilder);
+            IConfigurationBuilder configurationBuilder);
     }
 }

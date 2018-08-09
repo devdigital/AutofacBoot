@@ -7,7 +7,7 @@ namespace AutofacBoot.UnitTests.Tasks
 {
     public class StandardTask : IConfigurationBootstrapTask
     {
-        public Task Execute(IHostingEnvironment environment, ConfigurationBuilder configurationBuilder)
+        public Task Execute(IHostingEnvironment environment, IConfigurationBuilder configurationBuilder)
         {
             throw new NotImplementedException();
         }

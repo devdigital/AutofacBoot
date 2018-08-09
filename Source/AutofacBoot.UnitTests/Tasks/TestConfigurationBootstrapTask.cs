@@ -8,7 +8,7 @@ namespace AutofacBoot.UnitTests.Tasks
     {
         public Task Execute(
             IHostingEnvironment environment, 
-            ConfigurationBuilder configurationBuilder)
+            IConfigurationBuilder configurationBuilder)
         {
             configurationBuilder
                 .SetBasePath(environment.ContentRootPath)
