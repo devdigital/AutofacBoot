@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.12.1"></a>
+## [0.12.1](https://github.com/devdigital/AutofacBoot/compare/v0.12.0...v0.12.1) (2018-08-09)
+
+
+### Bug Fixes
+
+* add get web host builder method to test server factory ([2f99bef](https://github.com/devdigital/AutofacBoot/commit/2f99bef))
+
+
+
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/devdigital/AutofacBoot/compare/v0.11.1...v0.12.0) (2018-08-09)
 
