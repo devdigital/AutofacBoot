@@ -21,8 +21,8 @@ namespace AutofacBoot
         /// <param name="appBuilderConfigurations">The application builder configurations.</param>
         public DefaultAppBuilderConfigurationResolver(IDictionary<string, IAppBuilderConfiguration> appBuilderConfigurations)
         {
-            this.appBuilderConfigurations = appBuilderConfigurations ??
-                throw new ArgumentNullException(nameof(appBuilderConfigurations));
+            this.appBuilderConfigurations =
+                appBuilderConfigurations ?? new Dictionary<string, IAppBuilderConfiguration>();
         }
 
         /// <inheritdoc />
@@ -33,13 +33,9 @@ namespace AutofacBoot
                 throw new ArgumentNullException(nameof(id));
             }
 
-            if (!this.appBuilderConfigurations.ContainsKey(id))
-            {
-                throw new InvalidOperationException(
-                    $"Application builder configuration with identifier '{id}' not registered.");
-            }
-
-            return this.appBuilderConfigurations[id];
+            return this.appBuilderConfigurations.ContainsKey(id)
+                ? this.appBuilderConfigurations[id]
+                : new NullAppBuilderConfiguration();
         }
 
         /// <inheritdoc />
