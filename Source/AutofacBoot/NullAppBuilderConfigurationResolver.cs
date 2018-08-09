@@ -15,5 +15,11 @@ namespace AutofacBoot
         {
             return new NullAppBuilderConfiguration();
         }
+
+        /// <inheritdoc />
+        public IAppBuilderConfiguration Resolve<TConfiguration>()
+        {
+            return this.Resolve(null);
+        }
     }
 }

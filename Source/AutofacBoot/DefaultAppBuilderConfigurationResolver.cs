@@ -41,5 +41,11 @@ namespace AutofacBoot
 
             return this.appBuilderConfigurations[id];
         }
+
+        /// <inheritdoc />
+        public IAppBuilderConfiguration Resolve<TConfiguration>()
+        {
+            return this.Resolve(typeof(TConfiguration).FullName);
+        }
     }
 }
