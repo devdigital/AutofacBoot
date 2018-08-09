@@ -136,6 +136,16 @@ namespace AutofacBoot.Test
         /// <returns>The test server.</returns>
         public virtual async Task<TestServer> Create()
         {
+            var hostBuilder = await this.GetWebHostBuilder();
+            return new TestServer(hostBuilder);
+        }
+
+        /// <summary>
+        /// Gets the web host builder.
+        /// </summary>
+        /// <returns>The web host builder.</returns>
+        public async Task<IWebHostBuilder> GetWebHostBuilder()
+        {
             var taskResolver = await this.GetAdditionalConfigurationTaskResolver();
 
             var hostBuilder = new AutofacBootstrapper()
@@ -144,9 +154,7 @@ namespace AutofacBoot.Test
                 .WithAppBuilderConfigurations(this.appBuilderConfigurations)
                 .Configure();
 
-            hostBuilder = this.Configure(hostBuilder);
-
-            return new TestServer(hostBuilder);
+            return this.Configure(hostBuilder);
         }
 
         /// <summary>
