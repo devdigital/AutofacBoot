@@ -18,16 +18,18 @@ namespace AutofacBoot.Test
     public abstract class TestServerFactory<TServerFactory>
         where TServerFactory : TestServerFactory<TServerFactory>
     {
-        private readonly DictionaryContainerConfiguration containerConfiguration;
+        private readonly DictionaryContainerConfiguration dictionaryConfiguration;
 
         private readonly IDictionary<string, IAppBuilderConfiguration> appBuilderConfigurations;
+
+        private IContainerConfiguration currentContainerConfiguration;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestServerFactory{TServerFactory}"/> class.
         /// </summary>
         protected TestServerFactory()
         {
-            this.containerConfiguration = new DictionaryContainerConfiguration();
+            this.dictionaryConfiguration = new DictionaryContainerConfiguration();
             this.appBuilderConfigurations = new Dictionary<string, IAppBuilderConfiguration>();
         }
 
@@ -39,7 +41,7 @@ namespace AutofacBoot.Test
         /// <returns>The server factory.</returns>
         public TServerFactory With<TInterface, TImplementation>()
         {
-            this.containerConfiguration.With<TInterface, TImplementation>();
+            this.dictionaryConfiguration.With<TInterface, TImplementation>();
             return this as TServerFactory;
         }
 
@@ -51,7 +53,20 @@ namespace AutofacBoot.Test
         /// <returns>The server factory.</returns>
         public TServerFactory With<TInterface>(object instance)
         {
-            this.containerConfiguration.With<TInterface>(instance);
+            this.dictionaryConfiguration.With<TInterface>(instance);
+            return this as TServerFactory;
+        }
+
+        /// <summary>
+        /// Adds container configuration.
+        /// </summary>
+        /// <param name="containerConfiguration">The container configuration.</param>
+        /// <returns>The server factory.</returns>
+        public TServerFactory WithContainerConfiguration(IContainerConfiguration containerConfiguration)
+        {
+            this.currentContainerConfiguration = containerConfiguration ??
+                throw new ArgumentNullException(nameof(containerConfiguration));
+
             return this as TServerFactory;
         }
 
@@ -150,7 +165,7 @@ namespace AutofacBoot.Test
 
             var hostBuilder = new AutofacBootstrapper()
                 .WithTasks(taskResolver)
-                .WithContainer(this.containerConfiguration)
+                .WithContainer(new CompositeContainerConfiguration(this.currentContainerConfiguration, this.dictionaryConfiguration))
                 .WithAppBuilderConfigurations(this.appBuilderConfigurations)
                 .Configure();
 
