@@ -1,12 +1,10 @@
-# AutofacBoot
-
 Simple bootstrapping for ASP.NET Core applications running Autofac
 
 ```
 install-package AutofacBoot
 ```
 
-## Overview
+# Application Bootstrapping
 
 Placing all of your application bootstrapping tasks into a single `Startup` file violates [SRP](https://en.wikipedia.org/wiki/Single_responsibility_principle). AutofacBoot allows you to define each bootstrapping task separately, keeping bootstrapping easier to write and maintain.
 
@@ -154,7 +152,16 @@ public class ApplicationBootstrapTask : IApplicationBootstrapTask
 
 > Note that any `IApplicationBootstrapTask` can have services injected via the constructor that have previously been registered in a service or Autofac container bootstrap task.
 
-TODO: task type table
+## Task Types
+
+Tasks are run in the following order:
+
+| Type          | Interface                     | Method                                                                                                         | Can Inject Services |
+| ------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| Configuration | `IConfigurationBootstrapTask` | `Task Execute(IHostingEnvironment environment, IConfigurationBuilder configurationBuilder)`                    | No                              |
+| Services      | `IServiceBootstrapTask`       | `Task Execute(IHostingEnvironment environment, IConfigurationRoot configuration, IServiceCollection services)` | No                              |
+| Container     | `IContainerBootstrapTask`     | `Task Execute(IHostingEnvironment environment, IConfigurationRoot configuration, ContainerBuilder builder)`    | No                              |
+| Application   | `IApplicationBootstrapTask`   | `Task Execute(IApplicationBuilder app)`                                                                        | Yes                             |
 
 ## Recipes
 
@@ -175,3 +182,7 @@ public class LoggingBootstrapTask : IApplicationBootstrapTask, IOrderedTask
     }
 }
 ```
+
+# Testing
+
+Coming soon...
