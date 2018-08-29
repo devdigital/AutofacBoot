@@ -163,6 +163,44 @@ Tasks are run in the following order:
 | Container     | `IContainerBootstrapTask`     | `Task Execute(IHostingEnvironment environment, IConfigurationRoot configuration, ContainerBuilder builder)`    | No                              |
 | Application   | `IApplicationBootstrapTask`   | `Task Execute(IApplicationBuilder app)`                                                                        | Yes                             |
 
+## Conditional Execution
+
+Service, Container, and Application tasks can be conditionally executed by adding the `IConditionalExecution` interface to the task type and implementing the `Task<bool> CanExecute(IHostingEnvironment environment, IConfigurationRoot configurationRoot)` method:
+
+```csharp
+public class ApplicationWontExecuteTask : IApplicationBootstrapTask, IConditionalExecution
+{
+    public Task<bool> CanExecute(IHostingEnvironment environment, IConfigurationRoot configurationRoot)
+    {
+        // Can check configuration and determine if this task is executed...
+        return Task.FromResult(false);
+    }
+    
+    public Task Execute(IApplicationBuilder app)
+    {
+        // This won't be executed
+        return Task.CompletedTask;
+    }
+}
+```
+
+## Task Order
+
+You can change the order in which tasks are executed by adding the `IOrderedTask` interface to the task type and implementing the `int Order { get; }` property. The lower the value, the earlier in the pipeline the task will be executed. By default, all tasks have an order value of 0.
+
+```csharp
+public class ApplicationLastBootstrapTask : IApplicationBootstrapTask, IOrderedTask
+{
+    public int Order => 100;
+    
+    public Task Execute(IApplicationBuilder app)
+    {
+        // This will execute after all other tasks with an order < 100
+        return Task.CompletedTask;
+    }
+}
+```
+
 ## Recipes
 
 ### Serilog
