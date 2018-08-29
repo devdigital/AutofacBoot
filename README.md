@@ -223,4 +223,85 @@ public class LoggingBootstrapTask : IApplicationBootstrapTask, IOrderedTask
 
 # Testing
 
-Coming soon...
+```
+install-package AutofacBoot.Test
+```
+
+For integration testing, it's useful to use the same bootstrapping process but have the ability to override service registrations for stubs and mocks.
+
+The `AutofacBoot.Test` package provides a `TestServerFactory<TServerFactory>` abstract class which you can use to write integration tests using the same bootstrapping process. In its simplest form, create a server factory type deriving from `TestServerFactory<TServerFactory>` and implement the `Task<ITaskResolver> GetTaskResolver` method:
+
+```csharp
+public class MyServerFactory : TestServerFactory<MyServerFactory>
+{
+    protected override Task<ITaskResolver> GetTaskResolver()
+    {
+        ITaskResolver taskResolver = new AssemblyTaskResolver(
+            typeof(MyBootstrapTask).Assembly);
+
+        return Task.FromResult(taskResolver);
+    }
+}
+```
+
+In this instance, the task resolver used is a provided `AssemblyTaskResolver` which takes an assembly or collection of assemblies and scans them for task types. To use the same bootstrapping process in your tests as in production, specify the assembly that contains your production bootstrapping tasks.
+
+You can then use the server factory within your tests:
+
+```csharp
+[Theory]
+[AutoData]
+public async Task Return200(MyServerFactory serverFactory)
+{
+    using (var server = await serverFactory.Create())
+    {
+        using (var client = server.CreateClient())
+        {
+            var response = await client.GetAsync("api/foo");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+    }
+}
+```
+
+> Note that AutoFixture is used here to allow the server factory to be injected into the test method, thus reducing any 'arrange' part of the test.
+
+The server factory `Create` method returns a standard `TestServer` type provided by the `Microsoft.AspNetCore.TestHost` package.
+
+## Replacing Service Registrations
+
+To override service registrations in your test, you can use the builder methods provided by the `TestServerFactory`. These include `With<TInterface, TImplementation>` for type registrations, and `With<TInterface>(object instance)` for instance registrations.
+
+> Note that the registrations made within the `TestServerFactory` are executed last in the pipeline, overwriting any registrations made in the production bootstrapping.
+
+For example:
+
+```csharp
+[Theory]
+[AutoData]
+public async Task ValuesReturnsExpectedValues(
+    MyServerFactory serverFactory,
+    Mock<IValuesRepository> valuesRepository,
+    List<int> values)
+{
+    valuesRepository.Setup(r => r.GetValues()).ReturnsAsync(values);
+
+    using (var server = await serverFactory
+        .With<IValuesRepository>(valuesRepository.Object)
+        .Create())
+    {
+        using (var client = server.CreateClient())
+        {
+            var response = await client.GetAsync("api/values");
+            var responseValues = await response.FromJsonCollection<int>();
+            Assert.Equal(values, responseValues);
+        }
+    }
+}
+```
+
+> Note that in this example Moq is used to test that the data returned from the repository is returned by the controller action. `AutofacBoot.Test` provides `HttpResponseMessage` extensions `FromJson<T>` and `FromJsonCollection<T>` for JSON deserialization. `response.FromJsonCollection<int>()` is equivalent to `response.FromJson<IEnumerable<int>>()`.
+
+## Recipes
+
+TODO
