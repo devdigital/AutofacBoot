@@ -157,11 +157,11 @@ public class ApplicationBootstrapTask : IApplicationBootstrapTask
 Tasks are run in the following order:
 
 | Type          | Interface                     | Method                                                                                                         | Can Inject Services |
-| ------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| Configuration | `IConfigurationBootstrapTask` | `Task Execute(IHostingEnvironment environment, IConfigurationBuilder configurationBuilder)`                    | No                              |
-| Services      | `IServiceBootstrapTask`       | `Task Execute(IHostingEnvironment environment, IConfigurationRoot configuration, IServiceCollection services)` | No                              |
-| Container     | `IContainerBootstrapTask`     | `Task Execute(IHostingEnvironment environment, IConfigurationRoot configuration, ContainerBuilder builder)`    | No                              |
-| Application   | `IApplicationBootstrapTask`   | `Task Execute(IApplicationBuilder app)`                                                                        | Yes                             |
+| ------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------------- |
+| Configuration | `IConfigurationBootstrapTask` | `Task Execute(IHostingEnvironment environment, IConfigurationBuilder configurationBuilder)`                    | No                  |
+| Services      | `IServiceBootstrapTask`       | `Task Execute(IHostingEnvironment environment, IConfigurationRoot configuration, IServiceCollection services)` | No                  |
+| Container     | `IContainerBootstrapTask`     | `Task Execute(IHostingEnvironment environment, IConfigurationRoot configuration, ContainerBuilder builder)`    | No                  |
+| Application   | `IApplicationBootstrapTask`   | `Task Execute(IApplicationBuilder app)`                                                                        | Yes                 |
 
 ## Conditional Execution
 
@@ -302,6 +302,165 @@ public async Task ValuesReturnsExpectedValues(
 
 > Note that in this example Moq is used to test that the data returned from the repository is returned by the controller action. `AutofacBoot.Test` provides `HttpResponseMessage` extensions `FromJson<T>` and `FromJsonCollection<T>` for JSON deserialization. `response.FromJsonCollection<int>()` is equivalent to `response.FromJson<IEnumerable<int>>()`.
 
-## Recipes
+## Reusing Service Registrations
 
-TODO
+If you have many tests that use the same service setup, the test server factory supports configuring registrations within a separate type:
+
+```csharp
+public class MyConfiguration : IServerFactoryConfiguration<MyServerFactory>
+{
+    public void Configure(MyServerFactory factory)
+    {
+        factory.With<IValuesRepository>(...);
+        // etc.
+    }
+}
+```
+
+To use the configuration, use the `WithConfiguration` method:
+
+```csharp
+using (var server = await serverFactory
+    .WithConfiguration(new MyConfiguration())
+    .Create())
+{
+    ...
+}
+```
+
+You can use the `WithConfigurations` method to register multiple configurations:
+
+```csharp
+using (var server = await serverFactory
+    .WithConfigurations(new MyConfiguration(), new MyOtherConfiguration())
+    .Create())
+{
+    ...
+}
+```
+
+## Advanced Registrations
+
+The `With` methods and configurations provide a mechanism for simple instance or type registrations, which are suitable in most use cases.
+
+However, if you wish to have access to the full Autofac registration functionality within tests, you can use the `WithContainerConfiguration` method.
+
+This takes an `IContainerConfiguration` which gives access to the Autofac `ContainerBuilder` and the current environment:
+
+```csharp
+public interface IContainerConfiguration
+{
+    Task Configure(
+        IHostingEnvironment environment,
+        ContainerBuilder builder);
+}
+```
+
+You can implement this interface to perform any Autofac registrations you wish:
+
+```csharp
+public class MyContainerConfiguration : IContainerConfiguration
+{
+    public Task Configure(
+        IHostingEnvironment environment,
+        ContainerBuilder builder)
+    {
+        // Perform any Autofac registrations
+        builder.RegisterGeneric(...)
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+Then use your container configuration within the server factory builder:
+
+```csharp
+using (var server = await serverFactory
+    .WithContainerConfiguration(new MyContainerConfiguration())
+    .Create())
+{
+    ...
+}
+```
+
+## Running Test Middleware
+
+There are occasions when you may need to run custom middleware within your tests.
+
+First, implement `IAppBuilderConfiguration` which gives access to the ASP.NET Core `IApplicationBuilder`:
+
+```csharp
+public class MyAppBuilderConfiguration : IAppBuilderConfiguration
+{
+    public Task Configure(IApplicationBuilder app)
+    {
+        // Add middleware here
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+Then use your app builder configuration within the test server factory using the `WithAppBuilderConfiguration` method:
+
+```csharp
+using (var server = await serverFactory
+    .WithAppBuilderConfiguration("id", new MyAppBuilderConfiguration())                
+    .Create())
+{
+    ...
+}
+```
+
+The `WithAppBuilderConfiguration` also takes an identifier string which is used within your bootstrapping code to get access to the middleware. This gives flexibility to where your middleware is invoked in the pipeline. 
+
+To add your middleware, you can inject the provided `IAppBuilderConfigurationResolver` provided by the `AutofacBoot` package:
+
+```csharp
+public class ApplicationBootstrapTask : IApplicationBootstrapTask
+{
+    private readonly IAppBuilderConfigurationResolver configurationResolver;
+
+    public ApplicationBootstrapTask(IAppBuilderConfigurationResolver configurationResolver)
+    {        
+        this.configurationResolver = configurationResolver
+            ?? throw new ArgumentNullException(nameof(configurationResolver));
+    }
+
+    public Task Execute(IApplicationBuilder app)
+    {
+        var myMiddleware = this.configurationResolver.Resolve("id");
+        myMiddleware.Configure(app);
+
+        app.UseMvc();
+
+        return Task.CompletedTask;
+    }
+}
+```
+
+The `IAppBuilderConfigurationResolver` provides a `Resolve` method which takes the same identifier string as registrered with the test server factory.
+
+If the identifier doesn't exist (as would be the case when running the same bootstrapper in production), the `Resolve` method returns a `NullAppBuilderConfiguration` which does nothing, so you don't need to handle app builder configurations that are not registered.
+
+If you do not wish to use string identifiers, you can also use the generic `WithAppBuilderConfiguration` and `Resolve` methods, which use the provided type's full name as the identifier:
+
+```csharp
+using (var server = await serverFactory
+    .WithAppBuilderConfiguration<MyAppBuilderConfiguration>(
+        new MyAppBuilderConfiguration())
+    .Create())
+{
+    ...
+}
+```
+
+> Note this can be simplified to `WithAppBuilderConfiguration(new MyAppBuilderConfiguration())`
+
+Then, use the generic `Resolve` method within your production bootstrap code:
+
+```csharp
+var myMiddleware = this.configurationResolver.Resolve<MyAppBuilderConfiguration>();
+myMiddleware.Configure(app);
+```
